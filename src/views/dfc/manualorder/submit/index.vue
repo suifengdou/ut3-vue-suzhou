@@ -122,10 +122,12 @@
                     </el-row>
                     <el-row :gutter="20">
 
+                      <el-col :span="6"><el-form-item label="备注" prop="memo">
+                        <el-input v-model="params.memo" type="text" />
+                      </el-form-item></el-col>
                       <el-col :span="6"><el-form-item label="创建者" prop="creator">
                         <el-input v-model="params.creator" type="text" />
                       </el-form-item></el-col>
-                      <el-col :span="6" />
                       <el-col :span="6" />
                     </el-row>
 
@@ -954,6 +956,64 @@
           {
             value: 3,
             label: '韵达'
+          }
+        ],
+        optionsMistake: [
+          {
+            value: 0,
+            label: '正常'
+          },
+          {
+            value: 1,
+            label: '重复递交'
+          },
+          {
+            value: 2,
+            label: '售后配件需要补全sn、部件和描述'
+          },
+          {
+            value: 3,
+            label: '无部门'
+          },
+          {
+            value: 4,
+            label: '省市区出错'
+          },
+          {
+            value: 5,
+            label: '手机错误'
+          },
+          {
+            value: 6,
+            label: '无店铺'
+          },
+          {
+            value: 7,
+            label: '集运仓地址'
+          },
+          {
+            value: 8,
+            label: '14天内重复'
+          },
+          {
+            value: 9,
+            label: '14天外重复'
+          },
+          {
+            value: 10,
+            label: '输出单保存出错'
+          },
+          {
+            value: 11,
+            label: '货品数量错误'
+          },
+          {
+            value: 12,
+            label: '无收件人'
+          },
+          {
+            value: 13,
+            label: '此类型不可发整机'
           }
         ],
         optionsIsDeliver: [

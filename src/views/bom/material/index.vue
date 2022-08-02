@@ -1,5 +1,5 @@
 <template>
-  <div class="company-container">
+  <div class="material-container">
     <div class="tableTitle">
       <el-row :gutter="20">
         <el-col :span="5" class="titleBar">
@@ -15,7 +15,7 @@
         <el-col :span="5" class="titleBar">
           <div class="grid-content bg-purple">
             <el-tooltip class="item" effect="dark" content="点击弹出导入界面" placement="top-start">
-              <el-button type="success" @click="handleImport">导入</el-button>
+              <el-button type="success" @click="importExcel">导入</el-button>
             </el-tooltip>
           </div>
         </el-col>
@@ -45,28 +45,17 @@
                 <div class="block">
                   <el-form ref="filterForm" :model="params" label-width="80px">
                     <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="创建者" prop="creator">
-                        <el-input v-model="params.creator" type="text" />
+                      <el-col :span="6"><el-form-item label="材料名" prop="name">
+                        <el-input v-model="params.name" type="text" />
                       </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="平台名称" prop="category">
-                        <el-select
-                          v-model="params.category"
-                          filterable
-                          default-first-option
-                          reserve-keyword
-                          placeholder="请选择类型"
-                        >
-                          <el-option
-                            v-for="item in optionsCategory"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                          />
-                        </el-select>
+                      <el-col :span="6"><el-form-item label="材质" prop="texture">
+                        <el-input v-model="params.texture" type="text" />
                       </el-form-item></el-col>
-                      <el-col :span="6" />
                     </el-row>
                     <el-row :gutter="20">
+                      <el-col :span="6"><el-form-item label="硬度" prop="hardness">
+                        <el-input v-model="params.hardness" type="text" />
+                      </el-form-item></el-col>
                       <el-col :span="6"><el-form-item label="创建者" prop="creator">
                         <el-input v-model="params.creator" type="text" />
                       </el-form-item></el-col>
@@ -116,7 +105,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="公司简称"
+          label="材料名"
           prop="name"
           sortable="custom"
           :sort-orders="['ascending','descending']"
@@ -126,83 +115,34 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="公司全称"
-          prop="full_name"
+          label="材质"
+          prop="texture"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.full_name }}</span>
+            <span>{{ scope.row.texture }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="公司税号"
-          prop="tax_fil_number"
+          label="硬度"
+          prop="hardnesshardness"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.tax_fil_number }}</span>
+            <span>{{ scope.row.hardness }}</span>
           </template>
         </el-table-column>
+
         <el-table-column
-          label="注册资本"
-          prop="registered_capital"
+          label="备注"
+          prop="memo"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.registered_capital }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="实缴资本"
-          prop="paid_capital"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.paid_capital }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="开户行"
-          prop="accounts_bank"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.accounts_bank }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="注册地址"
-          prop="registered_address"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.registered_address }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="电话"
-          prop="telephone"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.telephone }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="状态"
-          prop="order_status"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.order_status.name }}</span>
+            <span>{{ scope.row.memo }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -216,24 +156,17 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="备注"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.memo }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
           label="创建时间"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.created_time }}</span>
+            <span>{{ scope.row.create_time }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="更新时间"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.updated_time }}</span>
+            <span>{{ scope.row.update_time }}</span>
           </template>
         </el-table-column>
 
@@ -259,40 +192,16 @@
             <span>相关信息</span>
           </div>
           <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="公司简称" prop="name">
-              <el-input v-model="formAdd.name" placeholder="请输入名称" />
+            <el-col :span="8"><el-form-item label="材料名" prop="name">
+              <el-input v-model="formAdd.name" placeholder="请输入材料名" />
+            </el-form-item></el-col>
+            <el-col :span="8"><el-form-item label="材质" prop="texture">
+              <el-input v-model="formAdd.texture" placeholder="请输入材质" />
             </el-form-item></el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="公司全称" prop="full_name">
-              <el-input v-model="formAdd.full_name" placeholder="请输入名称" />
-            </el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="公司税号" prop="tax_fil_number">
-              <el-input v-model="formAdd.tax_fil_number" placeholder="请输入名称" />
-            </el-form-item></el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="注册资本" prop="registered_capital">
-              <el-input v-model="formAdd.registered_capital" placeholder="请输入注册资本" />
-            </el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="实缴资本" prop="paid_capital">
-              <el-input v-model="formAdd.paid_capital" placeholder="请输入实缴资本" />
-            </el-form-item></el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="电话" prop="telephone">
-              <el-input v-model="formAdd.telephone" placeholder="请输入电话" />
-            </el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="开户行" prop="accounts_bank">
-              <el-input v-model="formAdd.accounts_bank" placeholder="请输入开户行" />
-            </el-form-item></el-col>
-          </el-row>
-          <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="开户行账号" prop="account">
-              <el-input v-model="formAdd.account" placeholder="请输入开户行账号" />
-            </el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="注册地址" prop="registered_address">
-              <el-input v-model="formAdd.registered_address" placeholder="请输入注册地址" />
+            <el-col :span="8"><el-form-item label="硬度" prop="hardness">
+              <el-input v-model="formAdd.hardness" placeholder="请输入硬度" />
             </el-form-item></el-col>
           </el-row>
           <el-row :gutter="20">
@@ -336,40 +245,16 @@
                 <span>相关信息</span>
               </div>
               <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="公司简称" prop="name">
-                  <el-input v-model="formEdit.name" placeholder="请输入名称" />
+                <el-col :span="8"><el-form-item label="材料名" prop="name">
+                  <el-input v-model="formEdit.name" placeholder="请输入材料名" />
+                </el-form-item></el-col>
+                <el-col :span="8"><el-form-item label="材质" prop="texture">
+                  <el-input v-model="formEdit.texture" placeholder="请输入材质" />
                 </el-form-item></el-col>
               </el-row>
               <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="公司全称" prop="full_name">
-                  <el-input v-model="formEdit.full_name" placeholder="请输入名称" />
-                </el-form-item></el-col>
-                <el-col :span="8"><el-form-item label="公司税号" prop="tax_fil_number">
-                  <el-input v-model="formEdit.tax_fil_number" placeholder="请输入名称" />
-                </el-form-item></el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="注册资本" prop="registered_capital">
-                  <el-input v-model="formEdit.registered_capital" placeholder="请输入注册资本" />
-                </el-form-item></el-col>
-                <el-col :span="8"><el-form-item label="实缴资本" prop="paid_capital">
-                  <el-input v-model="formEdit.paid_capital" placeholder="请输入实缴资本" />
-                </el-form-item></el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="电话" prop="telephone">
-                  <el-input v-model="formEdit.telephone" placeholder="请输入电话" />
-                </el-form-item></el-col>
-                <el-col :span="8"><el-form-item label="开户行" prop="accounts_bank">
-                  <el-input v-model="formEdit.accounts_bank" placeholder="请输入开户行" />
-                </el-form-item></el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="开户行账号" prop="account">
-                  <el-input v-model="formEdit.account" placeholder="请输入开户行账号" />
-                </el-form-item></el-col>
-                <el-col :span="8"><el-form-item label="注册地址" prop="registered_address">
-                  <el-input v-model="formEdit.registered_address" placeholder="请输入注册地址" />
+                <el-col :span="8"><el-form-item label="硬度" prop="hardness">
+                  <el-input v-model="formEdit.hardness" placeholder="请输入硬度" />
                 </el-form-item></el-col>
               </el-row>
               <el-row :gutter="20">
@@ -392,36 +277,6 @@
         </div>
       </template>
     </el-dialog>
-    <!--导入模态窗-->
-    <el-dialog
-      title="导入"
-      :visible.sync="importVisible"
-      width="33%"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-    >
-      <el-form ref="importForm" label-width="10%" :data="importFiles">
-        <div>
-          <h3>特别注意</h3>
-          <p>针对不同的模块，需要严格按照模板要求进行，无法导入的情况，请联系系统管理员</p>
-        </div>
-        <hr>
-        <el-form-item label="文件">
-          <input ref="files" type="file" multiple="multiple" @change="getFile($event)">
-        </el-form-item>
-        <hr>
-        <el-row :gutter="30">
-          <el-col :span="12" :offset="6">
-            <el-form-item>
-              <el-button type="primary" @click="importExcel">导入文件</el-button>
-              <el-button type="error" @click="closeImport">取消</el-button>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-      </el-form>
-
-    </el-dialog>
 
     <!--页脚-->
     <div class="tableFoots">
@@ -437,10 +292,10 @@
 </template>
 
 <script>
-import { getCompanyList, createCompany, updateCompany, excelImportCompany } from '@/api/base/company'
+import { getMaterialList, createMaterial, updateMaterial, importMaterial } from '@/api/bom/material/material'
 import moment from 'moment'
 export default {
-  name: 'OriInvoiceSubmit',
+  name: 'material-container',
   data() {
     return {
       DataList: [],
@@ -452,46 +307,11 @@ export default {
       },
       dialogVisibleAdd: false,
       dialogVisibleEdit: false,
-      importVisible: false,
-
       formAdd: {},
       formEdit: {},
-      importFiles: [],
-      url: '',
-      srcList: [],
-      optionsCategory: [
-        {
-          label: '本埠公司',
-          value: 0
-        },
-        {
-          label: '物流快递',
-          value: 1
-        },
-        {
-          label: '仓库存储',
-          value: 2
-        },
-        {
-          label: '生产制造',
-          value: 3
-        },
-        {
-          label: '经销代理',
-          value: 4
-        },
-        {
-          label: '小狗体系',
-          value: 5
-        },
-        {
-          label: '其他类型',
-          value: 6
-        }
-      ],
       rules: {
         name: [
-          { required: true, message: '请选择店铺', trigger: 'blur' }
+          { required: true, message: '请输入名称', trigger: 'blur' }
         ]
       }
     }
@@ -512,7 +332,7 @@ export default {
           this.params.create_time_before = moment.parseZone(this.params.create_time[1]).local().format('YYYY-MM-DD HH:MM:SS')
         }
       }
-      getCompanyList(this.params).then(
+      getMaterialList(this.params).then(
         res => {
           this.DataList = res.data.results
           this.totalNum = res.data.count
@@ -542,7 +362,7 @@ export default {
     // 提交添加
     handleSubmitAdd() {
       console.log(this.formAdd)
-      createCompany(this.formAdd).then(
+      createMaterial(this.formAdd).then(
         () => {
           this.fetchData()
           this.handleCancelAdd()
@@ -569,9 +389,8 @@ export default {
     handleEdit(values) {
       console.log(values)
       this.formEdit = { ...values }
-      this.formEdit.order_status = this.formEdit.order_status.id
-      this.formEdit.category = this.formEdit.category.id
       this.dialogVisibleEdit = true
+
     },
     // 提交编辑完成的数据
     handleSubmitEdit() {
@@ -581,7 +400,7 @@ export default {
         }
         const { id, ...data } = this.formEdit
         console.log(data)
-        updateCompany(id, data).then(
+        updateMaterial(id, data).then(
           () => {
             this.dialogVisibleEdit = false
             this.fetchData()
@@ -633,58 +452,79 @@ export default {
         }
       }
     },
-    // 导入
-    getFile(event) {
-      for (var i = 0; i < event.target.files.length; i++) {
-        this.importFiles.push(event.target.files[i])
-        console.log(this.importFiles)
-      }
-    },
+        // 导入
     importExcel() {
-      const importformData = new FormData()
-      for (let i = 0; i < this.importFiles.length; i++) {
-        importformData.append('files', this.importFiles[i])
-      }
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const h = this.$createElement
+      this.$msgbox({
+        title: '导入 Excel',
+        name: 'importmsg',
+        message: h('p', null, [
+          h('h3', { style: 'color: teal' }, '特别注意：'),
+          h('p', null, '针对不同的模块，需要严格按照模板要求进行，无法导入的情况，请联系系统管理员'),
+          h('h4', null, '浏览并选择文件：'),
+          h('input', { attrs: {
+              name: 'importfile',
+              type: 'file'
+            }}, null, '导入文件' ),
+          h('p', null),
+          h('hr', null)
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '执行中...'
+            const importformData = new FormData()
+            importformData.append('file', document.getElementsByName("importfile")[0].files[0])
+            const config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+            importMaterial(importformData, config).then(
+              res => {
+                this.$notify({
+                  title: '导入结果',
+                  message: res.data,
+                  type: 'success',
+                  duration: 0
+                })
+                instance.confirmButtonLoading = false
+                document.getElementsByName("importfile")[0].type = 'text'
+                document.getElementsByName("importfile")[0].value = ''
+                document.getElementsByName("importfile")[0].type = 'file'
+                this.fetchData()
+                done()
+              },
+              err => {
+                this.$notify({
+                  title: '失败原因',
+                  message: err.data,
+                  type: 'success',
+                  duration: 0
+                })
+                instance.confirmButtonLoading = false
+                this.fetchData()
+                done()
+              }
+            )
+          } else {
+            document.getElementsByName("importfile")[0].type = 'text'
+            document.getElementsByName("importfile")[0].value = ''
+            document.getElementsByName("importfile")[0].type = 'file'
+            this.fetchData()
+            done()
+          }
         }
-      }
-      this.tableLoading = true
-      excelImportCompany(importformData, config).then(
-        res => {
-          this.$notify({
-            title: '导入结果',
-            message: res.data,
-            type: 'success',
-            duration: 0
-          })
-        },
-        error => {
-          this.$notify({
-            title: '导入错误',
-            message: error,
-            type: 'error',
-            duration: 0
-          })
-        }
-      ).catch(
-        () => {
-          console.log('1')
+      }).then(action => {
+        console.log(action)
+      }).catch(
+        (error) => {
+          console.log(error)
         }
       )
-      this.$refs.files.type = 'text'
-      this.$refs.files.value = ''
-      this.$refs.files.type = 'file'
-      this.closeImport()
-      this.tableLoading = false
-      this.fetchData()
-    },
-    closeImport() {
-      this.importVisible = false
-    },
-    handleImport() {
-      this.importVisible = true
     },
     // 重置筛选
     resetParams() {

@@ -9,11 +9,13 @@ import workOrderRouter from './modules/workorder'
 import usersRouter from './modules/users'
 import baseRouter from './modules/base'
 import salesChannelRouter from './modules/sales'
-import crmChannelRouter from './modules/crm'
 import dfcRouter from './modules/dfc'
 import utilsRouter from './modules/utils'
 import psiChannelRouter from './modules/psi'
 import intSalesChannelRouter from './modules/intsales'
+import spplierRouter from './modules/supplier'
+import bomChannelRouter from './modules/bom'
+
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -99,11 +101,12 @@ export const constantRoutes = [
 export const asyncRoutes = [
   usersRouter,
   baseRouter,
+  spplierRouter,
+  bomChannelRouter,
   utilsRouter,
   workOrderRouter,
   salesChannelRouter,
   intSalesChannelRouter,
-  crmChannelRouter,
   dfcRouter,
   psiChannelRouter,
   // 404 page must be placed at the end !!!

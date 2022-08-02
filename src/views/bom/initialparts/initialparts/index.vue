@@ -1,28 +1,25 @@
 <template>
-  <div class="ori-invoice-submit-container">
+  <div class="initialparts-container">
     <div class="tableTitle">
       <el-row :gutter="20">
         <el-col :span="5" class="titleBar">
           <div class="grid-content bg-purple">
             <el-tooltip class="item" effect="dark" content="快捷搜索" placement="top-start">
-              <el-input v-model="params.mobile" class="grid-content bg-purple" placeholder="请输入手机" @keyup.enter.native="fetchData">
+              <el-input v-model="params.name" class="grid-content bg-purple" placeholder="请输入系列名称" @keyup.enter.native="fetchData">
                 <el-button slot="append" icon="el-icon-search" @click="fetchData" />
               </el-input>
             </el-tooltip>
           </div>
+
         </el-col>
         <el-col :span="5" class="titleBar">
           <div class="grid-content bg-purple">
-            <!--<el-tooltip class="item" effect="dark" content="点击弹出导入界面" placement="top-start">-->
-            <!--<el-button type="success" @click="handleImport">导入</el-button>-->
-            <!--</el-tooltip>-->
             <el-tooltip class="item" effect="dark" content="点击弹出导出界面" placement="top-start">
               <el-button type="success" @click="exportExcel">导出</el-button>
             </el-tooltip>
           </div>
         </el-col>
       </el-row>
-
       <el-row :gutter="10">
         <el-col :span="21" class="titleBar">
           <div class="grid-content bg-purple">
@@ -40,19 +37,19 @@
                 <div class="block">
                   <el-form ref="filterForm" :model="params" label-width="80px">
                     <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="店铺" prop="shop">
+                      <el-col :span="6"><el-form-item label="类别" prop="category">
                         <template>
                           <el-select
-                            v-model="params.shop"
+                            v-model="params.category"
                             filterable
                             default-first-option
                             remote
                             reserve-keyword
-                            placeholder="请搜索并选择店铺"
-                            :remote-method="remoteMethodShop"
+                            placeholder="请搜索并选择类别"
+                            :remote-method="remoteMethodMaterial"
                           >
                             <el-option
-                              v-for="item in optionsShop"
+                              v-for="item in optionsMaterial"
                               :key="item.value"
                               :label="item.label"
                               :value="item.value"
@@ -60,68 +57,24 @@
                           </el-select>
                         </template>
                       </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="单据类型" prop="order_category">
-                        <el-select v-model="params.order_category" placeholder="请选择单据类型">
-                          <el-option
-                            v-for="item in optionsCategory"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                          />
-                        </el-select>
-                      </el-form-item></el-col>
-                      <el-col :span="6" />
-                    </el-row>
-                    <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="单据状态" prop="order_status">
-                        <el-select v-model="params.order_status" placeholder="请选择单据类型">
-                          <el-option
-                            v-for="item in optionsStatus"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                          />
-                        </el-select>
-                      </el-form-item></el-col>
 
-                      <el-col :span="6"><el-form-item label="客户昵称" prop="nickname">
-                        <el-input v-model="params.nickname" type="text" />
+                      <el-col :span="6" />
+                    </el-row>
+                     <el-row :gutter="20">
+                      <el-col :span="6"><el-form-item label="系列名称" prop="name">
+                        <el-input v-model="params.name" type="text" />
+                      </el-form-item></el-col>
+                      <el-col :span="6"><el-form-item label="系列编码" prop="line_id">
+                        <el-input v-model="params.line_id" type="text" />
                       </el-form-item></el-col>
                       <el-col :span="6" />
                       <el-col :span="6" />
                     </el-row>
-                    <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="收件人" prop="receiver">
-                        <el-input v-model="params.receiver" type="text" />
-                      </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="手机" prop="mobile">
-                        <el-input v-model="params.mobile" type="text" />
-                      </el-form-item></el-col>
-                      <el-col :span="4" />
-                      <el-col :span="4" />
-                    </el-row>
-                    <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="源单号" prop="order_id">
-                        <el-input v-model="params.order_id" type="text" />
-                      </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="创建者" prop="creator">
-                        <el-input v-model="params.creator" type="text" />
-                      </el-form-item></el-col>
-                      <el-col :span="6" />
-                      <el-col :span="6" />
-                    </el-row>
-                    <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="备注" prop="memo">
-                        <el-input v-model="params.memo" type="text" />
-                      </el-form-item></el-col>
-                      <el-col :span="6" />
-                    </el-row>
-
                     <el-row :gutter="20">
                       <el-col :span="12"><el-form-item label="创建时间">
                         <div class="block">
                           <el-date-picker
-                            v-model="params.create_time"
+                            v-model="params.created_time"
                             type="datetimerange"
                             range-separator="至"
                             start-placeholder="开始日期"
@@ -150,37 +103,39 @@
         :data="DataList"
         border
         style="width: 100%"
+        :row-style="rowStyle"
         @sort-change="onSortChange"
       >
         <el-table-column
           label="ID"
         >
           <template slot-scope="scope">
-            <el-tag type="success"><span>{{ scope.row.id }}</span></el-tag>
+            <el-tag type="success" @click="handleEdit(scope.row)"><span>{{ scope.row.id }}</span></el-tag>
           </template>
         </el-table-column>
         <el-table-column
-          label="店铺"
-          prop="shop"
+          label="初始物料"
+          prop="name"
+          width="210px"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.shop.name }}</span>
+            <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="错误原因"
-          prop="mistake_tag"
+          label="编码"
+          prop="ip_id"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.mistake_tag.name }}</span>
+            <span>{{ scope.row.ip_id }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="单据状态"
+          label="状态"
           prop="order_status"
           sortable="custom"
           :sort-orders="['ascending','descending']"
@@ -190,118 +145,84 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="原始单号"
-          prop="erp_order_id"
-          sortable="custom"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.erp_order_id }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="网名"
-          prop="nickname"
-          sortable="custom"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.nickname }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="收件人"
-          prop="receiver"
+          label="类型"
+          prop="category"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.receiver }}</span>
+            <span>{{ scope.row.category.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="地址"
-          prop="address"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
+          label="规格"
+          width="150px"
+          prop="specification"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.address }}</span>
+            <span>{{ scope.row.specification }}</span>
           </template>
         </el-table-column>
+        <el-table-column
+          label="工艺"
+          width="150px"
+          prop="technology"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.technology }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="原材料"
+          prop="material"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.material.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="材料色号"
+          prop="material_color_number"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.material_color_number }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="克重"
+          prop="weight"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.weight }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="是否喷漆"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.is_lacquered"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              disabled
+            />
+          </template>
 
-        <el-table-column
-          label="手机"
-          prop="mobile"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.mobile }}</span>
-          </template>
         </el-table-column>
-
         <el-table-column
-          label="货品"
-          prop="goods_details"
+          label="色号"
+          prop="color_number"
         >
           <template slot-scope="scope">
-            <div v-for="(item, i) in scope.row.goods_details">
-              <el-tag type="success" size="mini" effect="dark"><span>{{ item.name.name }}*{{ item.quantity }}</span></el-tag>
-            </div>
+            <span>{{ scope.row.color_number }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="单据类型"
-          prop="order_category"
+          label="备注"
+          prop="group_number"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.order_category.name }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          label="机器序列号"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.m_sn }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          label="故障部位"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.broken_part }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="故障描述"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.description }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="省"
-          prop="province"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.province.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="市"
-          prop="city"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.city.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="区"
-          prop="district"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.district.name }}</span>
+            <span>{{ scope.row.group_number }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -311,44 +232,25 @@
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.creator }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="创建部门"
-          prop="department"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.department.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="订单号"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.order_id }}</span>
+            <span>{{ scope.row.creator.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="创建时间"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.create_time }}</span>
+            <span>{{ scope.row.created_time }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="更新时间"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.update_time }}</span>
+            <span>{{ scope.row.updated_time }}</span>
           </template>
         </el-table-column>
-
       </el-table>
     </div>
-
     <!--页脚-->
     <div class="tableFoots">
       <center>
@@ -357,17 +259,15 @@
     </div>
   </div>
 </template>
-
 <script>
-import { getManualOrderManageList, exportManualOrderManage } from '@/api/dfc/manualorder/manualorder'
-import { getShopList } from '@/api/base/shop'
-import { getCompanyList } from '@/api/base/company'
-import { getGoodsList } from '@/api/base/goods'
-import { getCityList } from '@/api/utils/geography/city'
+import {
+  getInitialParts,
+} from '@/api/bom/initialparts/initialparts'
+import { getMaterialList } from '@/api/bom/material/material'
 import moment from 'moment'
 import XLSX from 'xlsx'
 export default {
-  name: 'OriInvoiceSubmit',
+  name: 'initialparts',
   data() {
     return {
       DataList: [],
@@ -382,52 +282,14 @@ export default {
         page: 1,
         allSelectTag: 0
       },
-      optionsShop: [],
-      optionsDepartment: [],
-      optionsCompany: [],
-      optionsPlatform: [],
-      optionsCity: [],
-      optionsGoods: [],
-      optionsCategory: [
-        {
-          value: 1,
-          label: '质量问题'
-        },
-        {
-          value: 2,
-          label: '开箱即损'
-        },
-        {
-          value: 3,
-          label: '礼品赠品'
-        }
-      ],
-      optionsStatus: [
-        {
-          value: 0,
-          label: '已取消'
-        },
-        {
-          value: 1,
-          label: '未处理'
-        },
-        {
-          value: 2,
-          label: '已导入'
-        }
-      ],
-      optionsIsDeliver: [
-        {
-          value: true,
-          label: '是'
-        },
-        {
-          value: false,
-          label: '否'
-        }
-      ],
-      OrderDetailsList: [],
-      oriInvoiceGoodsListEdit: [],
+      dialogVisibleAdd: false,
+      dialogVisibleEdit: false,
+      importVisible: false,
+      formAdd: {},
+      formEdit: {},
+      importFile: {},
+      optionsMaterial: [],
+      rules: {},
       checkedDetail: [],
       checkedDetailEdit: []
     }
@@ -440,14 +302,14 @@ export default {
       // console.log('我开始运行了')
       console.log(this.params)
       this.tableLoading = true
-      // console.log(this.params.create_time)
-      if (typeof (this.params.create_time) !== 'undefined') {
-        if (this.params.create_time.length === 2) {
-          this.params.create_time_after = moment.parseZone(this.params.create_time[0]).local().format('YYYY-MM-DD HH:MM:SS')
-          this.params.create_time_before = moment.parseZone(this.params.create_time[1]).local().format('YYYY-MM-DD HH:MM:SS')
+      // console.log(this.params.created_time)
+      if (typeof (this.params.created_time) !== 'undefined') {
+        if (this.params.created_time.length === 2) {
+          this.params.created_time_after = moment.parseZone(this.params.created_time[0]).local().format('YYYY-MM-DD HH:MM:SS')
+          this.params.created_time_before = moment.parseZone(this.params.created_time[1]).local().format('YYYY-MM-DD HH:MM:SS')
         }
       }
-      getManualOrderManageList(this.params).then(
+      getInitialParts(this.params).then(
         res => {
           this.DataList = res.data.results
           this.totalNum = res.data.count
@@ -468,7 +330,16 @@ export default {
       this.params.page = val
       this.fetchData()
     },
-    // 导出
+    // 检索用户组选项
+    unique(arr) {
+      // 根据唯一标识no来对数组进行过滤
+      // 定义常量 res,值为一个Map对象实例
+      const res = new Map()
+      // 返回arr数组过滤后的结果，结果为一个数组   过滤条件是对象中的value值，
+      // 如果res中没有某个键，就设置这个键的值为1
+      return arr.filter((arr) => !res.has(arr.value) && res.set(arr.value, 1))
+    },
+
     exportExcel() {
       const h = this.$createElement
       let resultMessage, resultType
@@ -489,27 +360,17 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
-            exportManualOrderManage(this.params).then(
+            exportOritailorderSubmit(this.params).then(
               res => {
                 res.data = res.data.map(item => {
                   return {
-                    店铺: item.shop.name,
-                    网名: item.nickname,
-                    收件人: item.receiver,
-                    地址: item.address,
-                    手机: item.mobile,
-                    订单号: item.order_id,
-                    单据类型: item.order_category.name,
-                    机器序列号: item.m_sn,
-                    故障部位: item.broken_part,
-                    故障描述: item.description,
-                    货品: JSON.stringify(item.goods_details),
-                    客服: item.servicer,
-                    创建时间: item.create_time,
-                    更新时间: item.update_time,
-                    创建者: item.creator,
-                    处理标签: item.process_tag.name,
-                    错误原因: item.mistake_tag.name
+                    系列名称: item.name,
+                    系列编码: item.line_id,
+                    系列类型: item.Material.name,
+                    备注: item.memo,
+                    创建时间: item.created_time,
+                    更新时间: item.updated_time,
+                    创建者: item.creator.name,
                   }
                 })
                 const ws = XLSX.utils.json_to_sheet(res.data)
@@ -545,87 +406,27 @@ export default {
         }
       )
     },
-    // 货品搜索
-    remoteMethodGoods(query) {
+    // 类别搜索
+    remoteMethodMaterial(query) {
       if (query !== '') {
         // console.log("我准备开始检索啦")
         setTimeout(() => {
           // console.log("我是真正的开始检索啦")
           const paramsSearch = {}
           paramsSearch.name = query
-          getGoodsList(paramsSearch).then(
+          getMaterialList(paramsSearch).then(
             res => {
-              this.optionsGoods = res.data.results.map(item => {
+              this.optionsMaterial = res.data.results.map(item => {
                 return { label: item.name, value: item.id }
               })
             }
           )
         }, 200)
       } else {
-        this.options = []
+        this.optionsMaterial = []
       }
     },
-    // 店铺搜索
-    remoteMethodShop(query) {
-      if (query !== '') {
-        // console.log("我准备开始检索啦")
-        setTimeout(() => {
-          // console.log("我是真正的开始检索啦")
-          const paramsSearch = {}
-          paramsSearch.name = query
-          getShopList(paramsSearch).then(
-            res => {
-              this.optionsShop = res.data.results.map(item => {
-                return { label: item.name, value: item.id }
-              })
-            }
-          )
-        }, 200)
-      } else {
-        this.options = []
-      }
-    },
-    // 公司搜索
-    remoteMethodCompany(query) {
-      if (query !== '') {
-        // console.log("我准备开始检索啦")
-        setTimeout(() => {
-          // console.log("我是真正的开始检索啦")
-          const paramsSearch = {}
-          paramsSearch.name = query
-          paramsSearch.category = 5
-          getCompanyList(paramsSearch).then(
-            res => {
-              this.optionsCompany = res.data.results.map(item => {
-                return { label: item.name, value: item.id }
-              })
-            }
-          )
-        }, 200)
-      } else {
-        this.options = []
-      }
-    },
-    // 城市搜索
-    remoteMethodCity(query) {
-      if (query !== '') {
-        // console.log("我准备开始检索啦")
-        setTimeout(() => {
-          // console.log("我是真正的开始检索啦")
-          const paramsSearch = {}
-          paramsSearch.name = query
-          getCityList(paramsSearch).then(
-            res => {
-              this.optionsCity = res.data.results.map(item => {
-                return { label: item.name, value: item.id }
-              })
-            }
-          )
-        }, 200)
-      } else {
-        this.options = []
-      }
-    },
+ 
     // 排序
     onSortChange({ prop, order }) {
       console.log(this.GroupList)
@@ -655,7 +456,20 @@ export default {
         }
       }
     },
-
+    // 表格的行样式
+    rowStyle({ row, rowIndex}) {
+      let row_style = {}
+      if (row.length > 0) {
+        row_style = {
+          backgroundColor: '#f39800'
+        }
+      } else if (row.length < 0) {
+        row_style = {
+          backgroundColor: '#c1d8ac'
+        }
+      }
+      return row_style
+    },
     // 重置筛选
     resetParams() {
       this.params = {
