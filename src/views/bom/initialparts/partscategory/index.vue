@@ -134,12 +134,12 @@
         </el-table-column>
         <el-table-column
           label="类型代码"
-          prop="pc_id"
+          prop="code"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.pc_id }}</span>
+            <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
         <el-table-column

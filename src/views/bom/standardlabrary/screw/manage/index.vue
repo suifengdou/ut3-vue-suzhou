@@ -136,13 +136,13 @@
         </el-table-column>
         <el-table-column
           label="螺丝编码"
-          prop="screw_id"
+          prop="code"
           sortable="custom"
           width="190px"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.screw_id }}</span>
+            <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
         <el-table-column

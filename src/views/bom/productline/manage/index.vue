@@ -155,12 +155,12 @@
         </el-table-column>
         <el-table-column
           label="系列编码"
-          prop="line_id"
+          prop="code"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.line_id }}</span>
+            <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
         <el-table-column

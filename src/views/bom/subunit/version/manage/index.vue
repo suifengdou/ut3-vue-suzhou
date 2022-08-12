@@ -81,7 +81,6 @@
         border
         style="width: 100%"
         @sort-change="onSortChange"
-        @selection-change="handleSelectionChange"
       >
         <el-table-column label="ID">
           <template slot-scope="scope">
@@ -91,7 +90,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="螺丝名称"
+          label="版本号名"
           prop="name"
           sortable="custom"
           width="210px"
@@ -102,34 +101,34 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="螺丝编码"
-          prop="screw_id"
+          label="版本"
+          prop="number"
           sortable="custom"
           width="190px"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.screw_id }}</span>
+            <span>{{ scope.row.number }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="牙径"
-          prop="diameter"
+          label="版本编码"
+          prop="code"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.diameter }}</span>
+            <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="长度"
-          prop="length"
+          label="子项"
+          prop="subunit"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.length }}</span>
+            <span>{{ scope.row.subunit.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -245,83 +244,6 @@ export default {
       this.params.page = val
       this.fetchData()
     },
-    // 添加
-    add() {
-      this.dialogVisibleAdd = true
-    },
-    // 提交添加
-    handleSubmitAdd() {
-      console.log(this.formAdd)
-      createScrew(this.formAdd).then(
-        () => {
-          this.fetchData()
-          this.handleCancelAdd()
-        }
-      ).catch(
-        (error) => {
-          this.$notify({
-            title: '创建错误',
-            message: error.data,
-            type: 'error',
-            duration: 0
-          })
-        }
-      )
-    },
-    // 关闭添加界面
-    handleCancelAdd() {
-      this.dialogVisibleAdd = false
-      this.$refs.handleFormAdd.resetFields()
-    },
-    // 编辑
-    handleEdit(values) {
-      console.log(values)
-      this.formEdit = { ...values }
-      this.formEdit.creator = this.formEdit.creator.id
-      this.formEdit.head_type = this.formEdit.head_type.id
-      this.formEdit.tooth_type = this.formEdit.tooth_type.id
-      this.formEdit.finish = this.formEdit.finish.id
-      this.formEdit.slot_type = this.formEdit.slot_type.id
-      this.formEdit.material = this.formEdit.material.id
-      this.dialogVisibleEdit = true
-      if (this.formEdit.heat_treated != "") {
-        this.formEdit.heat_treated = this.formEdit.heat_treated.id
-      }
-      this.formEdit.order_status = this.formEdit.order_status.id
-      this.formEdit.mistake_tag = this.formEdit.mistake_tag.id
-      this.formEdit.process_tag = this.formEdit.process_tag.id
-
-      delete this.formEdit.initial_parts
-    },
-    // 提交编辑完成的数据
-    handleSubmitEdit() {
-      this.$refs.FormEdit.validate(valid => {
-        if (!valid) {
-          return
-        }
-        const { id, ...data } = this.formEdit
-        console.log(data)
-        updateScrew(id, data).then(
-          () => {
-            this.dialogVisibleEdit = false
-            this.fetchData()
-          }).catch(
-          (error) => {
-            this.$notify({
-              title: '更新错误',
-              message: error.data,
-              type: 'error',
-              duration: 0
-            })
-          }
-        )
-      })
-    },
-    // 关闭修改界面
-    handleCancelEdit() {
-      this.dialogVisibleEdit = false
-      this.$refs.FormEdit.resetFields()
-    },
     // 排序
     onSortChange({ prop, order }) {
       console.log(this.GroupList)
@@ -350,346 +272,6 @@ export default {
           }
         }
       }
-    },
-        // 选择器，单选和多选（主表的）
-    handleSelectionChange(val) {
-      this.multipleSelection = val
-      if (this.selectNum !== this.totalNum || this.multipleSelection.length < 30) {
-        this.selectNum = this.multipleSelection.length
-        this.params.allSelectTag = 0
-      }
-    },
-    // 全选的
-    checkAllOption() {
-      this.$refs.tableList.clearSelection()
-      this.$refs.tableList.toggleAllSelection()
-      this.params.allSelectTag = 1
-      this.selectNum = this.totalNum
-      console.log('我是全选的' + this.selectNum)
-    },
-    // 审核单据
-    handleCheck() {
-      this.tableLoading = true
-      if (this.params.allSelectTag === 1) {
-        checkWorkOrder(this.params).then(
-          res => {
-            if (res.data.successful !== 0) {
-              this.$notify({
-                title: '审核成功',
-                message: `审核成功条数：${res.data.successful}`,
-                type: 'success',
-                offset: 70,
-                duration: 3000
-              })
-            }
-            if (res.data.false !== 0) {
-              this.$notify({
-                title: '审核失败',
-                message: `审核失败条数：${res.data.false}`,
-                type: 'error',
-                offset: 140,
-                duration: 0
-              })
-              this.$notify({
-                title: '错误详情',
-                message: res.data.error,
-                type: 'error',
-                offset: 210,
-                duration: 0
-              })
-            }
-            delete this.params.allSelectTag
-            this.fetchData()
-          }).catch(
-          (error) => {
-            this.$notify({
-              title: '错误详情',
-              message: error.data,
-              type: 'error',
-              offset: 210,
-              duration: 0
-            })
-            this.fetchData()
-          }
-        )
-      } else {
-        console.log(this.multipleSelection)
-        if (typeof (this.multipleSelection) === 'undefined') {
-          this.$notify({
-            title: '错误详情',
-            message: '未选择订单无法审核',
-            type: 'error',
-            offset: 70,
-            duration: 0
-          })
-          this.fetchData()
-        }
-        const ids = this.multipleSelection.map(item => item.id)
-        this.params.ids = ids
-        checkWorkOrder(this.params).then(
-          res => {
-            if (res.data.successful !== 0) {
-              this.$notify({
-                title: '审核成功',
-                message: `审核成功条数：${res.data.successful}`,
-                type: 'success',
-                offset: 70,
-                duration: 3000
-              })
-            }
-            if (res.data.false !== 0) {
-              this.$notify({
-                title: '审核失败',
-                message: `审核失败条数：${res.data.false}`,
-                type: 'error',
-                offset: 140,
-                duration: 0
-              })
-              this.$notify({
-                title: '错误详情',
-                message: res.data.error,
-                type: 'error',
-                offset: 210,
-                duration: 0
-              })
-            }
-            console.log(this.params)
-            console.log(this.params.ids)
-
-            delete this.params.ids
-            this.fetchData()
-          }).catch(
-          (error) => {
-            delete this.params.ids
-            this.$notify({
-              title: '错误详情',
-              message: error.data,
-              type: 'error',
-              offset: 210,
-              duration: 0
-            })
-            this.fetchData()
-          }
-        )
-      }
-    },
-    handleReject() {
-      const h = this.$createElement
-      let resultMessage, resultType
-      this.$msgbox({
-        title: '取消工单',
-        message: h('p', null, [
-          h('h3', { style: 'color: teal' }, '特别注意：'),
-          h('hr', null, ''),
-          h('span', null, '取消工单即为此源单号的开票申请彻底取消！无法再次用此源单号创建开票申请，请慎重选择！'),
-          h('hr', null, '')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            this.tableLoading = true
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            if (this.params.allSelectTag === 1) {
-              rejectWorkOrder(this.params).then(
-                res => {
-                  if (res.data.successful !== 0) {
-                    this.$notify({
-                      title: '取消成功',
-                      message: `取消成功条数：${res.data.successful}`,
-                      type: 'success',
-                      offset: 70,
-                      duration: 3000
-                    })
-                  }
-                  if (res.data.false !== 0) {
-                    this.$notify({
-                      title: '取消失败',
-                      message: `取消败条数：${res.data.false}`,
-                      type: 'error',
-                      offset: 140,
-                      duration: 0
-                    })
-                    this.$notify({
-                      title: '失败错误详情',
-                      message: res.data.error,
-                      type: 'error',
-                      offset: 210,
-                      duration: 0
-                    })
-                  }
-                  delete this.params.allSelectTag
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }).catch(
-                (error) => {
-                  this.$notify({
-                    title: '异常错误详情',
-                    message: error.data,
-                    type: 'error',
-                    offset: 210,
-                    duration: 0
-                  })
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }
-              )
-            } else {
-              if (typeof (this.multipleSelection) === 'undefined') {
-                this.$notify({
-                  title: '错误详情',
-                  message: '未选择订单无法取消',
-                  type: 'error',
-                  offset: 70,
-                  duration: 0
-                })
-                instance.confirmButtonLoading = false
-                done()
-                this.fetchData()
-              }
-              const ids = this.multipleSelection.map(item => item.id)
-              this.params.ids = ids
-              rejectWorkOrder(this.params).then(
-                res => {
-                  if (res.data.successful !== 0) {
-                    this.$notify({
-                      title: '取消成功',
-                      message: `取消成功条数：${res.data.successful}`,
-                      type: 'success',
-                      offset: 70,
-                      duration: 3000
-                    })
-                  }
-                  if (res.data.false !== 0) {
-                    this.$notify({
-                      title: '取消失败',
-                      message: `取消败条数：${res.data.false}`,
-                      type: 'error',
-                      offset: 140,
-                      duration: 0
-                    })
-                    this.$notify({
-                      title: '失败错误详情',
-                      message: res.data.error,
-                      type: 'error',
-                      offset: 210,
-                      duration: 0
-                    })
-                  }
-                  delete this.params.allSelectTag
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }).catch(
-                (error) => {
-                  this.$notify({
-                    title: '异常错误详情',
-                    message: error.data,
-                    type: 'error',
-                    offset: 210,
-                    duration: 0
-                  })
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }
-              )
-            }
-          } else {
-            done()
-            this.fetchData()
-          }
-        }
-      }).then().catch(
-        (error) => {
-          this.$notify({
-            title: '异常错误详情',
-            message: error.data,
-            type: 'error',
-            offset: 210,
-            duration: 0
-          })
-          this.fetchData()
-        }
-      )
-    },
-        // 导入
-    importExcel() {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '导入 Excel',
-        name: 'importmsg',
-        message: h('p', null, [
-          h('h3', { style: 'color: teal' }, '特别注意：'),
-          h('p', null, '针对不同的模块，需要严格按照模板要求进行，无法导入的情况，请联系系统管理员'),
-          h('h4', null, '浏览并选择文件：'),
-          h('input', { attrs: {
-              name: 'importfile',
-              type: 'file'
-            }}, null, '导入文件' ),
-          h('p', null),
-          h('hr', null)
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            const importformData = new FormData()
-            importformData.append('file', document.getElementsByName("importfile")[0].files[0])
-            const config = {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            }
-            importScrew(importformData, config).then(
-              res => {
-                this.$notify({
-                  title: '导入结果',
-                  message: res.data,
-                  type: 'success',
-                  duration: 0
-                })
-                instance.confirmButtonLoading = false
-                document.getElementsByName("importfile")[0].type = 'text'
-                document.getElementsByName("importfile")[0].value = ''
-                document.getElementsByName("importfile")[0].type = 'file'
-                this.fetchData()
-                done()
-              },
-              err => {
-                this.$notify({
-                  title: '失败原因',
-                  message: err.data,
-                  type: 'success',
-                  duration: 0
-                })
-                instance.confirmButtonLoading = false
-                this.fetchData()
-                done()
-              }
-            )
-          } else {
-            document.getElementsByName("importfile")[0].type = 'text'
-            document.getElementsByName("importfile")[0].value = ''
-            document.getElementsByName("importfile")[0].type = 'file'
-            this.fetchData()
-            done()
-          }
-        }
-      }).then(action => {
-        console.log(action)
-      }).catch(
-        (error) => {
-          console.log(error)
-        }
-      )
     },
     // 导出
     exportExcel() {

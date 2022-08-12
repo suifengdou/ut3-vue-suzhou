@@ -126,12 +126,12 @@
         </el-table-column>
         <el-table-column
           label="编码"
-          prop="ip_id"
+          prop="code"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.ip_id }}</span>
+            <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
         <el-table-column

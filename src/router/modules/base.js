@@ -32,45 +32,6 @@ const baseRouter = {
       meta: { title: '部门管理', roles: ['department.view_department',  'AllPrivileges'] }
     },
     {
-      path: 'goods',
-      component: () => import('@/views/base/goods/goodsroot'), // Parent router-view
-      name: 'goods',
-      meta: { title: '货品', roles: ['goods.view_goods', 'goods.view_user_goods', 'AllPrivileges'] },
-      redirect: 'noRedirect',
-      children: [
-        {
-          path: 'goodscategory',
-          component: () => import('@/views/base/goods/goodscategory'),
-          name: '货品类型',
-          meta: { title: '货品类型', roles: ['goods.view_goodscategory', 'AllPrivileges'] }
-        },
-        {
-          path: 'parts',
-          component: () => import('@/views/base/goods/parts'),
-          name: '配件',
-          meta: { title: '配件', roles: ['goods.view_goods', 'AllPrivileges'] }
-        },
-        {
-          path: 'product',
-          component: () => import('@/views/base/goods/machine'),
-          name: '整机',
-          meta: { title: '整机', roles: ['goods.view_goods', 'AllPrivileges'] }
-        },
-        {
-          path: 'gift',
-          component: () => import('@/views/base/goods/gift'),
-          name: '礼品',
-          meta: { title: '礼品', roles: ['goods.view_goods', 'AllPrivileges'] }
-        },
-        {
-          path: 'manage',
-          component: () => import('@/views/base/goods/index'),
-          name: '货品管理',
-          meta: { title: '货品管理', roles: ['goods.view_user_goods', 'AllPrivileges'] }
-        }
-      ]
-    },
-    {
       path: 'warehouse',
       component: () => import('@/views/base/warehouse'), // Parent router-view
       name: 'warehouse',
