@@ -1,11 +1,11 @@
 <template>
-  <div class="handboard-container">
+  <div class="bomdetails-container">
     <div class="tableTitle">
       <el-row :gutter="20">
         <el-col :span="5" class="titleBar">
           <div class="grid-content bg-purple">
             <el-tooltip class="item" effect="dark" content="快捷搜索" placement="top-start">
-              <el-input v-model="params.name" class="grid-content bg-purple" placeholder="请输入名称" @keyup.enter.native="fetchData">
+              <el-input v-model="params.version__name" class="grid-content bg-purple" placeholder="请输入BOM版本" @keyup.enter.native="fetchData">
                 <el-button slot="append" icon="el-icon-search" @click="fetchData" />
               </el-input>
             </el-tooltip>
@@ -30,22 +30,9 @@
                 <div class="block">
                   <el-form ref="filterForm" :model="params" label-width="80px">
                     <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="编码" prop="screw_id">
-                        <el-input v-model="params.screw_id" type="text" />
+                      <el-col :span="6"><el-form-item label="原子件" prop="details__name">
+                        <el-input v-model="params.details__name" type="text" />
                       </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="牙径" prop="diameter">
-                        <el-input v-model="params.diameter" type="text" />
-                      </el-form-item></el-col>
-                    </el-row>
-                    <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="长度" prop="length">
-                        <el-input v-model="params.length" type="text" />
-                      </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="创建者" prop="creator">
-                        <el-input v-model="params.creator" type="text" />
-                      </el-form-item></el-col>
-                      <el-col :span="6" />
-                      <el-col :span="6" />
                     </el-row>
                     <el-row :gutter="20">
                       <el-col :span="12"><el-form-item label="创建时间">
@@ -88,66 +75,33 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="手板名称"
-          prop="name"
+          label="BOM版本"
+          prop="version"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.version.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="手板编码"
-          prop="code"
+          label="原子件"
+          prop="details"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.code }}</span>
+            <span>{{ scope.row.details.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="类型"
-          prop="category"
+          label="数量"
+          prop="quantity"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.category.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="子项"
-          prop="subunit"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.subunit.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="是否组项"
-        >
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.is_component"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              disabled
-            />
-          </template>
-
-        </el-table-column>
-        <el-table-column
-          label="组项"
-          prop="component"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.component.name }}</span>
+            <span>{{ scope.row.quantity }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -202,10 +156,10 @@
 </template>
 
 <script>
-import { getHandboard } from '@/api/bom/handboard/handboard'
+import { getBOMDetails } from '@/api/bom/bom/bomdetails'
 import moment from 'moment'
 export default {
-  name: 'handboard-container',
+  name: 'bomdetails-container',
   data() {
     return {
       DataList: [],
@@ -239,7 +193,7 @@ export default {
           this.params.created_time_before = moment.parseZone(this.params.created_time[1]).local().format('YYYY-MM-DD HH:MM:SS')
         }
       }
-      getHandboard(this.params).then(
+      getBOMDetails(this.params).then(
         res => {
           this.DataList = res.data.results
           this.totalNum = res.data.count

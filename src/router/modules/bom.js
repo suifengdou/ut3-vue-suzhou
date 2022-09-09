@@ -131,12 +131,6 @@ const bomChannelRouter = {
           name: '整机版本',
           meta: { title: '整机版本', roles: ['AllPrivileges'] }
         },
-        {
-          path: 'unitversiondetails',
-          component: () => import('@/views/bom/units/unitsversiondetails/manage'),
-          name: '整机版本明细',
-          meta: { title: '整机版本明细', roles: ['AllPrivileges'] }
-        },
       ]
     },
     {
@@ -236,15 +230,36 @@ const bomChannelRouter = {
         {
           path: 'parts',
           component: () => import('@/views/bom/goods/goods/manage'),
-          name: '货品',
-          meta: { title: '零配件', roles: ['AllPrivileges'] }
+          name: '货品管理',
+          meta: { title: '货品管理', roles: ['AllPrivileges'] }
         },
         {
           path: 'partsdetails',
           component: () => import('@/views/bom/goods/goodsdetails/manage'),
           name: '货品明细',
-          meta: { title: '零配件明细', roles: ['AllPrivileges'] }
+          meta: { title: '货品明细', roles: ['AllPrivileges'] }
         },
+      ]
+    },
+    {
+      path: 'bom',
+      component: () => import('@/views/bom/bom'), // Parent router-view
+      name: '物料清单',
+      meta: { title: '物料清单', roles: ['AllPrivileges'] },
+      redirect: 'noRedirect',
+      children: [
+        {
+          path: 'bom',
+          component: () => import('@/views/bom/bom/bom/manage'),
+          name: '物料清单管理',
+          meta: { title: '物料清单管理', roles: ['AllPrivileges'] }
+        },
+        {
+          path: 'bomsdetails',
+          component: () => import('@/views/bom/bom/bomdetails/manage'),
+          name: '物料清单明细',
+          meta: { title: '物料清单明细', roles: ['AllPrivileges'] }
+        }
       ]
     },
   ]

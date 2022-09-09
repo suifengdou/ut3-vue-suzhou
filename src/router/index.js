@@ -15,6 +15,7 @@ import psiChannelRouter from './modules/psi'
 import intSalesChannelRouter from './modules/intsales'
 import spplierRouter from './modules/supplier'
 import bomChannelRouter from './modules/bom'
+import projectChannelRouter from './modules/project'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -103,11 +104,8 @@ export const asyncRoutes = [
   baseRouter,
   spplierRouter,
   bomChannelRouter,
+  projectChannelRouter,
   utilsRouter,
-  workOrderRouter,
-  salesChannelRouter,
-  intSalesChannelRouter,
-  dfcRouter,
   psiChannelRouter,
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

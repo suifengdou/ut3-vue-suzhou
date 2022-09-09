@@ -626,14 +626,14 @@ export default {
         { value: 'OT', label:  '其他'}
       ],
       optionsSlotType: [
-        { value: '+', label: '十字槽' },
-        { value: '-', label: '一字槽' },
-        { value: '△', label: '三角槽' },
-        { value: '□', label: '内方槽' },
+        { value: 'CR', label: '十字槽' },
+        { value: 'ST', label: '一字槽' },
+        { value: 'TR', label: '三角槽' },
+        { value: 'SQ', label: '内方槽' },
         { value: 'T', label: '菊花槽' },
         { value: 'HS', label: '内六角' },
         { value: 'PZ', label: '米字槽' },
-        { value: '+-', label: '十一槽' },
+        { value: 'CS', label: '十一槽' },
         { value: 'Y', label: 'Y型槽' },
         { value: 'H', label: '工字槽' },
         { value: 'L', label: '止退花齿' }

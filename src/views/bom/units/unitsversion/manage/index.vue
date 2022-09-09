@@ -106,7 +106,7 @@
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.units_id }}</span>
+            <span>{{ scope.row.number }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -127,6 +127,36 @@
         >
           <template slot-scope="scope">
             <span>{{ scope.row.units.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="产品线"
+          prop="units"
+          sortable="custom"
+          :sort-orders="['ascending','descending']"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.units.product_line }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="国别"
+          prop="units"
+          sortable="custom"
+          :sort-orders="['ascending','descending']"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.units.nationality }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="整机编码"
+          prop="units"
+          sortable="custom"
+          :sort-orders="['ascending','descending']"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.units.code }}</span>
           </template>
         </el-table-column>
         <el-table-column

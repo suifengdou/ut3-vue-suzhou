@@ -10,7 +10,7 @@
         <hr style="height:1px;border:none;border-top:1px dashed #ABA7A4;">
       </div>
       <center>
-        <span>苏州供应链UT专版 v3.001</span>
+        <span>供应链UT专版 v3.001</span>
       </center>
     </div>
   </section>

@@ -88,33 +88,56 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="原子件"
-          prop="name"
+          label="手板"
+          prop="handboard"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.handboard.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="原子件编码"
-          prop="code"
+          label="手板供应商"
+          prop="handboardsupplier"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.code }}</span>
+            <span>{{ scope.row.handboardsupplier.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="中间件"
-          prop="middleparts"
+          label="初始物料"
+          prop="initial_parts"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.middleparts.name }}</span>
+            <span>{{ scope.row.initial_parts.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="是否制板"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.is_handboard"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              disabled
+            />
+          </template>
+
+        </el-table-column>
+        <el-table-column
+          label="数量"
+          prop="quantity"
+          sortable="custom"
+          :sort-orders="['ascending','descending']"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.quantity }}</span>
           </template>
         </el-table-column>
         <el-table-column

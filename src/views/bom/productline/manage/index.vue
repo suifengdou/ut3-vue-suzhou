@@ -254,8 +254,8 @@
           </el-row>
 
           <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="系列编码" prop="line_id">
-              <el-input v-model="formAdd.line_id" placeholder="系列编码" />
+            <el-col :span="8"><el-form-item label="系列编码" prop="code">
+              <el-input v-model="formAdd.code" placeholder="系列编码" />
             </el-form-item></el-col>
           </el-row>
           <el-row :gutter="20">
@@ -264,7 +264,64 @@
             </el-form-item></el-col>
           </el-row>
         </el-card>
-
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>组件类型信息</span>
+          </div>
+          <el-row :gutter="20">
+            <el-col :span="2"><el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddDetails">添加</el-button></el-col>
+            <el-col :span="2"><el-button
+              type="success"
+              icon="el-icon-delete"
+              size="mini"
+              @click="handleDeleteDetails"
+            >删除</el-button></el-col>
+            <el-col :span="2"><el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="handleDeleteAllDetails"
+            >清空</el-button></el-col>
+            <el-col :span="10" />
+            <el-col :span="4" />
+            <el-col :span="4" />
+          </el-row>
+          <el-table
+            ref="tableAdd"
+            border
+            :data="OrderDetailsList"
+            :row-class-name="rowClassName"
+            @selection-change="handleDetailSelectionChange"
+          >
+            <el-table-column type="selection" width="30" align="center" />
+            <el-table-column label="序号" align="center" prop="xh" width="50" />
+            <el-table-column label="组件类型" width="250" prop="component_category">
+              <template slot-scope="scope">
+                <el-select
+                  v-model="OrderDetailsList[scope.row.xh-1].component_category"
+                  filterable
+                  default-first-option
+                  remote
+                  reserve-keyword
+                  placeholder="请搜索并选择组件类型"
+                  :remote-method="remoteMethodComponentCategory"
+                >
+                  <el-option
+                    v-for="item in optionsComponentCategory"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" width="250" prop="memo">
+              <template slot-scope="scope">
+                <el-input v-model="OrderDetailsList[scope.row.xh-1].memorandum" type="text" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
         <el-card class="box-card">
           <el-row :gutter="20">
             <el-col :span="8" :offset="16"><el-form-item size="large">
@@ -326,8 +383,8 @@
               </el-row>
 
               <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="系列编码" prop="line_id">
-                  <el-input v-model="formEdit.line_id" placeholder="系列编码" />
+                <el-col :span="8"><el-form-item label="系列编码" prop="code">
+                  <el-input v-model="formEdit.code" placeholder="系列编码" />
                 </el-form-item></el-col>
               </el-row>
               <el-row :gutter="20">
@@ -335,6 +392,69 @@
                   <el-input v-model="formEdit.memo" placeholder="备注" />
                 </el-form-item></el-col>
               </el-row>
+            </el-card>
+
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>组件类型信息</span>
+              </div>
+              <el-row :gutter="20">
+                <el-col :span="2"><el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddDetailsEdit">添加</el-button></el-col>
+                <el-col :span="2"><el-button
+                  type="success"
+                  icon="el-icon-delete"
+                  size="mini"
+                  @click="handleDeleteDetailsEdit"
+                >删除</el-button></el-col>
+                <el-col :span="2"><el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  @click="handleDeleteAllDetailsEdit"
+                >清空</el-button></el-col>
+                <el-col :span="10" />
+                <el-col :span="4" />
+                <el-col :span="4" />
+              </el-row>
+              <el-table
+                ref="tableEdit"
+                border
+                :data="OrderDetailsListEdit"
+                :row-class-name="rowClassName"
+                @selection-change="handleDetailSelectionChangeEdit"
+              >
+                <el-table-column type="selection" width="30" align="center" />
+                <el-table-column label="序号" align="center" prop="xh" width="50">
+                  <template slot-scope="scope">
+                    <span>{{ OrderDetailsListEdit[scope.row.xh-1].xh }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="名称" width="250" prop="component_category">
+                  <template slot-scope="scope">
+                    <el-select
+                      v-model="OrderDetailsListEdit[scope.row.xh-1].component_category"
+                      filterable
+                      default-first-option
+                      remote
+                      reserve-keyword
+                      placeholder="请搜索并选择组件类别"
+                      :remote-method="remoteMethodComponentCategory"
+                    >
+                      <el-option
+                        v-for="item in optionsComponentCategory"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column label="备注" width="250" prop="memo">
+                  <template slot-scope="scope">
+                    <el-input v-model="OrderDetailsListEdit[scope.row.xh-1].memo" type="text" />
+                  </template>
+                </el-table-column>
+              </el-table>
             </el-card>
             <el-card class="box-card">
               <el-row :gutter="20">
@@ -364,6 +484,7 @@ import {
   createProductLine,
   updateProductLine,
 } from '@/api/bom/productline/productline'
+import { getComponetCategory } from '@/api/bom/component/componentcategory'
 import { getProductLineCategoryList } from '@/api/bom/productline/productlinecategory'
 import moment from 'moment'
 import XLSX from 'xlsx'
@@ -390,9 +511,13 @@ export default {
       formEdit: {},
       importFile: {},
       optionsCategory: [],
+      optionsComponentCategory: [],
       rules: {},
+      OrderDetailsList: [],
+      OrderDetailsListEdit: [],
       checkedDetail: [],
-      checkedDetailEdit: []
+      checkedDetailEdit: [],
+
     }
   },
   created() {
@@ -434,6 +559,7 @@ export default {
 
     // 跳出编辑对话框
     handleEdit(values) {
+      this.OrderDetailsListEdit = []
       console.log(values)
       this.formEdit = { ...values }
       this.dialogVisibleEdit = true
@@ -441,6 +567,14 @@ export default {
       // console.log(currentShop)
       this.optionsCategory = [{ label: this.formEdit.category.name, value: this.formEdit.category.id }]
       this.formEdit.category = this.formEdit.category.id
+      let index
+      this.optionsComponentCategory = []
+      for (index in this.formEdit.component_details) {
+        this.formEdit.component_details[index].xh = index + 1
+        this.optionsComponentCategory.push({label:this.formEdit.component_details[index]["component_category"].name, value: this.formEdit.component_details[index]["component_category"].id})
+        this.formEdit.component_details[index].component_category = this.formEdit.component_details[index].component_category.id
+        this.OrderDetailsListEdit.push(this.formEdit.component_details[index])
+      }
     },
     // 提交编辑完成的数据
     handleSubmitEdit() {
@@ -456,6 +590,7 @@ export default {
           data[transFieldStr[attrStr]] = data[transFieldStr[attrStr]].id
         }
         console.log(data)
+        data.component_details = this.OrderDetailsListEdit
         updateProductLine(id, data).then(
           () => {
             this.dialogVisibleEdit = false
@@ -475,6 +610,7 @@ export default {
     // 关闭修改界面
     handleCancelEdit() {
       this.dialogVisibleEdit = false
+      this.OrderDetailsListEdit = []
       this.$refs.handleFormEdit.resetFields()
     },
     // 添加
@@ -483,6 +619,7 @@ export default {
     },
     // 递交添加
     handleSubmitAdd() {
+      this.formAdd.component_details = this.OrderDetailsList
       createProductLine(this.formAdd).then(
         () => {
           this.fetchData()
@@ -500,6 +637,7 @@ export default {
     // 关闭添加界面
     handleCancelAdd() {
       this.dialogVisibleAdd = false
+      this.OrderDetailsList = []
       this.$refs.handleFormAdd.resetFields()
     },
     // 检索用户组选项
@@ -876,7 +1014,97 @@ export default {
         this.optionsCategory = []
       }
     },
- 
+    remoteMethodComponentCategory(query) {
+      if (query !== '') {
+        // console.log("我准备开始检索啦")
+        setTimeout(() => {
+          // console.log("我是真正的开始检索啦")
+          const paramsSearch = {}
+          paramsSearch.name = query
+          getComponetCategory(paramsSearch).then(
+            res => {
+              this.optionsComponentCategory = res.data.results.map(item => {
+                return { label: item.name, value: item.id }
+              })
+            }
+          )
+        }, 200)
+      } else {
+        this.optionsComponentCategory = []
+      }
+    },
+    // 货品列表顺序
+    rowClassName({ row, rowIndex }) {
+      row.xh = rowIndex + 1
+    },
+    // 选中新建表单货品项
+    handleDetailSelectionChange(selection) {
+      if (selection.length > 1) {
+        this.$refs.tableAdd.clearSelection()
+        this.$refs.tableAdd.toggleRowSelection(selection.pop())
+      } else {
+        this.checkedDetail = selection
+      }
+    },
+    // 选中编辑表单货品项
+    handleDetailSelectionChangeEdit(selection) {
+      if (selection.length > 1) {
+        this.$refs.tableEdit.clearSelection()
+        this.$refs.tableEdit.toggleRowSelection(selection.pop())
+      } else {
+        this.checkedDetailEdit = selection
+      }
+    },
+    // 删除选中表单货品项
+    handleDeleteDetails() {
+      if (this.checkedDetail.length === 0) {
+        this.$alert('请先选择要删除的数据', '提示', {
+          confirmButtonText: '确定'
+        })
+      } else {
+        this.OrderDetailsList.splice(this.checkedDetail[0].xh - 1, 1)
+      }
+    },
+    // 删除选中编辑表单货品项
+    handleDeleteDetailsEdit() {
+      if (this.checkedDetailEdit.length === 0) {
+        this.$alert('请先选择要删除的数据', '提示', {
+          confirmButtonText: '确定'
+        })
+      } else {
+        this.OrderDetailsListEdit.splice(this.checkedDetailEdit[0].xh - 1, 1)
+      }
+    },
+    // 删除全部表单货品项
+    handleDeleteAllDetails() {
+      this.OrderDetailsList = undefined
+    },
+    // 删除编辑全部表单货品项
+    handleDeleteAllDetailsEdit() {
+      this.OrderDetailsListEdit = undefined
+    },
+    // 添加表单货品项
+    handleAddDetails() {
+      if (this.OrderDetailsList === undefined) {
+        this.OrderDetailsList = []
+      }
+      const obj = {
+        id: 'n'
+      }
+      this.OrderDetailsList.push(obj)
+      console.log(this.OrderDetailsList)
+    },
+    // 添加编辑表单货品项
+    handleAddDetailsEdit() {
+      if (this.OrderDetailsListEdit === undefined) {
+        this.OrderDetailsListEdit = []
+      }
+      const obj = {
+        id: 'n'
+      }
+      this.OrderDetailsListEdit.push(obj)
+      console.log(this.OrderDetailsListEdit)
+    },
     // 排序
     onSortChange({ prop, order }) {
       console.log(this.GroupList)

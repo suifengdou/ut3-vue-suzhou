@@ -57,8 +57,8 @@
                           />
                         </el-select>
                       </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="组项类型编码" prop="component_category_id">
-                        <el-input v-model="params.component_category_id" type="text" />
+                      <el-col :span="6"><el-form-item label="组项类型编码" prop="code">
+                        <el-input v-model="params.code" type="text" />
                       </el-form-item></el-col>
                       <el-col :span="6" />
                       <el-col :span="6" />
@@ -134,12 +134,12 @@
         </el-table-column>
         <el-table-column
           label="子项类别"
-          prop="subunit_category"
+          prop="type"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.subunit_category.name }}</span>
+            <span>{{ scope.row.type.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -202,15 +202,15 @@
             <el-col :span="8"><el-form-item label="组项类型名" prop="name">
               <el-input v-model="formAdd.name" placeholder="请输入组项类型名" />
             </el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="组项类型编码" prop="component_category_id">
-              <el-input v-model="formAdd.component_category_id" placeholder="请输入组项类型编码" />
+            <el-col :span="8"><el-form-item label="组项类型编码" prop="code">
+              <el-input v-model="formAdd.code" placeholder="请输入组项类型编码" />
             </el-form-item></el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="子项类别" prop="subunit_category">
+            <el-col :span="8"><el-form-item label="子项类别" prop="type">
               <template>
                 <el-select
-                  v-model="formAdd.subunit_category"
+                  v-model="formAdd.type"
                   filterable
                   default-first-option
                   reserve-keyword
@@ -270,15 +270,15 @@
             <el-col :span="8"><el-form-item label="组项类型名" prop="name">
               <el-input v-model="formEdit.name" placeholder="请输入组项类型名" />
             </el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="组项类型编码" prop="component_category_id">
-              <el-input v-model="formEdit.component_category_id" placeholder="请输入组项类型编码" />
+            <el-col :span="8"><el-form-item label="组项类型编码" prop="code">
+              <el-input v-model="formEdit.code" placeholder="请输入组项类型编码" />
             </el-form-item></el-col>
           </el-row>
           <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="子项类别" prop="subunit_category">
+            <el-col :span="8"><el-form-item label="子项类别" prop="type">
               <template>
                 <el-select
-                  v-model="formEdit.subunit_category"
+                  v-model="formEdit.type"
                   filterable
                   default-first-option
                   reserve-keyword
@@ -417,7 +417,7 @@ export default {
     handleEdit(values) {
       console.log(values)
       this.formEdit = { ...values }
-      this.formEdit.component_category_id = this.formEdit.component_category_id.id
+      this.formEdit.type = this.formEdit.type.id
       this.formEdit.creator = this.formEdit.creator.id
       this.dialogVisibleEdit = true
     },

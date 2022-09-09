@@ -1,5 +1,5 @@
 <template>
-  <div class="handboard-container">
+  <div class="bom-container">
     <div class="tableTitle">
       <el-row :gutter="20">
         <el-col :span="5" class="titleBar">
@@ -30,11 +30,11 @@
                 <div class="block">
                   <el-form ref="filterForm" :model="params" label-width="80px">
                     <el-row :gutter="20">
-                      <el-col :span="6"><el-form-item label="编码" prop="screw_id">
-                        <el-input v-model="params.screw_id" type="text" />
+                      <el-col :span="6"><el-form-item label="编码" prop="code">
+                        <el-input v-model="params.code" type="text" />
                       </el-form-item></el-col>
-                      <el-col :span="6"><el-form-item label="牙径" prop="diameter">
-                        <el-input v-model="params.diameter" type="text" />
+                      <el-col :span="6"><el-form-item label="整机版本" prop="units_name">
+                        <el-input v-model="params.units_name" type="text" />
                       </el-form-item></el-col>
                     </el-row>
                     <el-row :gutter="20">
@@ -88,7 +88,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="手板名称"
+          label="BOM名称"
           prop="name"
           sortable="custom"
           :sort-orders="['ascending','descending']"
@@ -98,7 +98,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="手板编码"
+          label="BOM编码"
           prop="code"
           sortable="custom"
           :sort-orders="['ascending','descending']"
@@ -109,45 +109,12 @@
         </el-table-column>
         <el-table-column
           label="类型"
-          prop="category"
+          prop="units"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.category.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="子项"
-          prop="subunit"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.subunit.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="是否组项"
-        >
-          <template slot-scope="scope">
-            <el-switch
-              v-model="scope.row.is_component"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-              disabled
-            />
-          </template>
-
-        </el-table-column>
-        <el-table-column
-          label="组项"
-          prop="component"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.component.name }}</span>
+            <span>{{ scope.row.units.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -202,10 +169,10 @@
 </template>
 
 <script>
-import { getHandboard } from '@/api/bom/handboard/handboard'
+import { getBOM } from '@/api/bom/bom/bom'
 import moment from 'moment'
 export default {
-  name: 'handboard-container',
+  name: 'bom-container',
   data() {
     return {
       DataList: [],
@@ -239,7 +206,7 @@ export default {
           this.params.created_time_before = moment.parseZone(this.params.created_time[1]).local().format('YYYY-MM-DD HH:MM:SS')
         }
       }
-      getHandboard(this.params).then(
+      getBOM(this.params).then(
         res => {
           this.DataList = res.data.results
           this.totalNum = res.data.count

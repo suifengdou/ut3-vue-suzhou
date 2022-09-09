@@ -130,6 +130,20 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="是否定名"
+          prop="is_named"
+        >
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.is_development"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              disabled
+            />
+          </template>
+
+        </el-table-column>
+        <el-table-column
           label="系列排序"
           prop="serial_number"
           sortable="custom"
