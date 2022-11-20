@@ -204,7 +204,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="类型"
+          label="错误原因"
           prop="mistake_tag"
           sortable="custom"
           :sort-orders="['ascending','descending']"
@@ -263,6 +263,14 @@
         >
           <template slot-scope="scope">
             <el-button type="danger" size="mini" @click="handlePhotoUpload(scope.row)">上传</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="创建手板"
+          width="105px"
+        >
+          <template slot-scope="scope">
+            <el-button type="danger" size="mini" @click="handlePhototypeCreate(scope.row)">创建手板</el-button>
           </template>
         </el-table-column>
         <el-table-column
@@ -527,6 +535,51 @@
 
 
     </el-dialog>
+    <!--新建添加模态窗-->
+    <el-dialog
+      title="新增"
+      width="50%"
+      :visible.sync="dialogVisibleAddPhototype"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <el-form
+        ref="handleFormAdd"
+        label-width="88px"
+        size="mini"
+        :rules="rules"
+        :model="formAddPhototype"
+      >
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <h2><span>相关信息及说明</span></h2>
+            <h3><span>手板创建可以一次创建多套。一旦创建，套数不可修改！解决的方法就是整体取消掉，然后重新创建。为防止操作复杂，务必确认创建数量！</span></h3>
+          </div>
+          <el-row :gutter="20">
+            <el-col :span="8"><el-form-item label="源单号" prop="id">
+              <span>{{ formAddPhototype.id }}</span>
+            </el-form-item></el-col>
+          </el-row>
+
+          <el-row :gutter="20">
+            <el-col :span="10"><el-form-item label="申请套数" prop="quantity">
+              <el-input type="number" v-model="formAddPhototype.quantity"  placeholder="请输入名称" />
+            </el-form-item></el-col>
+          </el-row>
+        </el-card>
+        <el-card class="box-card">
+          <el-row :gutter="20">
+            <el-col :span="16" :offset="8"><el-form-item size="large">
+              <div class="btn-warpper">
+                <el-button type="primary" @click="handleSubmitAddPhototype">创建</el-button>
+                <el-button type="danger" @click="handleCancelAddPhototype">取消</el-button>
+              </div>
+            </el-form-item></el-col>
+          </el-row>
+        </el-card>
+
+      </el-form>
+    </el-dialog>
     <!--日志查看模态窗-->
     <el-dialog
       title="日志查看"
@@ -588,8 +641,10 @@ import {
   rejectSubUnitProjectDevelop,
   photoImportSubUnitProjectDevelop,
   setTagSubUnitProjectDevelop,
-  resetTagSubUnitProjectDevelop
+  resetTagSubUnitProjectDevelop,
+  CreatePhototypeSubUnitProjectDevelop
 } from '@/api/project/subunitproject/develop'
+import { getLogSubUnitProject, getFileDetailsSubUnitProject } from '@/api/project/subunitproject/manage'
 import { getProductLineList } from '@/api/bom/productline/productline'
 import { getNationalityList } from '@/api/utils/geography/nationality'
 import { deleteSUPFiles } from '@/api/project/subunitproject/supfiles'
@@ -615,11 +670,13 @@ export default {
       },
       dialogVisibleAdd: false,
       dialogVisibleEdit: false,
+      dialogVisibleAddPhototype: false,
       importVisible: false,
       photoViewVisible: false,
       logViewVisible: false,
       formAdd: {},
       formEdit: {},
+      formAddPhototype:{},
       OrderDetailsList: [],
       componentDetailsTable: [],
       checkedDetail: [],
@@ -692,7 +749,67 @@ export default {
       this.params.page = val
       this.fetchData()
     },
-
+    // 创建手板
+    handlePhototypeCreate(userValue) {
+      this.formAddPhototype.id = userValue.id
+      this.dialogVisibleAddPhototype = true
+    },
+    // 取消手板创建
+    handleCancelAddPhototype(){
+      this.dialogVisibleAddPhototype = false
+    },
+    // 递交添加
+    handleSubmitAddPhototype() {
+      console.log(this.formAddPhototype)
+      CreatePhototypeSubUnitProjectDevelop(this.formAddPhototype).then(
+        res => {
+            if (res.data.successful !== 0) {
+              this.$notify({
+                title: '创建成功',
+                message: `创建成功条数：${res.data.successful}`,
+                type: 'success',
+                offset: 70,
+                duration: 3000
+              })
+            }
+            if (res.data.false !== 0) {
+              this.$notify({
+                title: '创建失败',
+                message: `创建失败条数：${res.data.false}`,
+                type: 'error',
+                offset: 140,
+                duration: 0
+              })
+              this.$notify({
+                title: '错误详情',
+                message: res.data.error,
+                type: 'error',
+                offset: 210,
+                duration: 0
+              })
+            }
+            this.fetchData()
+            this.handleCancelAddPhototype()
+          }).catch(
+          (error) => {
+            this.$notify({
+              title: '错误详情',
+              message: error.data,
+              type: 'error',
+              offset: 210,
+              duration: 0
+            })
+            this.fetchData()
+          }
+      ).catch((res) => {
+        this.$notify({
+          title: '创建错误',
+          message: res.data,
+          type: 'error',
+          duration: 0
+        })
+      })
+    },
     // 图片上传模块
     handlePhotoUpload(userValue) {
       this.photoData.id = userValue.id
@@ -788,16 +905,59 @@ export default {
       this.importFiles = []
       this.importVisible = false
     },
-    // 查看图片
+    // 查看文档
     handlePhotoView(userValue) {
-      console.log(userValue)
+      this.fileDetails = []
       this.photoViewVisible = true
-      this.fileDetails = userValue.file_details
+      const data = {
+        id: userValue.id
+      }
+      getFileDetailsSubUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.fileDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-    // 查看图片
+    // 查看日志
     logView(userValue) {
+      this.logDetails = []
       this.logViewVisible = true
-      this.logDetails = userValue.log_details
+      const data = {
+        id: userValue.id
+      }
+      getLogSubUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.logDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
 
     // 导入
@@ -1325,6 +1485,7 @@ export default {
         }
       )
     },
+    // 驳回单据
     handleReject() {
       const h = this.$createElement
       let resultMessage, resultType

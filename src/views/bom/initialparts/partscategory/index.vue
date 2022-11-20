@@ -235,14 +235,14 @@
           </div>
           <el-row :gutter="20">
 
-            <el-col :span="8"><el-form-item label="系列名称" prop="name">
-              <el-input v-model="formAdd.name" placeholder="系列名称" />
+            <el-col :span="8"><el-form-item label="物料类型" prop="name">
+              <el-input v-model="formAdd.name" placeholder="物料类型" />
             </el-form-item></el-col>
           </el-row>
 
           <el-row :gutter="20">
-            <el-col :span="8"><el-form-item label="系列编码" prop="pc_id">
-              <el-input v-model="formAdd.pc_id" placeholder="系列编码" />
+            <el-col :span="8"><el-form-item label="类型编码" prop="code">
+              <el-input v-model="formAdd.code" placeholder="类型编码" />
             </el-form-item></el-col>
           </el-row>
           <el-row :gutter="20">
@@ -315,8 +315,8 @@
               </el-row>
 
               <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="类型代码" prop="pc_id">
-                  <el-input v-model="formEdit.pc_id" placeholder="类型代码" />
+                <el-col :span="8"><el-form-item label="类型代码" prop="code">
+                  <el-input v-model="formEdit.code" placeholder="类型代码" />
                 </el-form-item></el-col>
               </el-row>
               <el-row :gutter="20">

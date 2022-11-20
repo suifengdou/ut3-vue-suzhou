@@ -367,7 +367,7 @@
     <el-dialog
       title="日志查看"
       :visible.sync="logViewVisible"
-      width="70%"
+      width="60%"
       border
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -386,7 +386,7 @@
           <el-table-column
             label="操作内容"
             prop="content"
-            width="120px"
+            width="520px"
           >
             <template slot-scope="scope">
               <span>{{ scope.row.content }}</span>
@@ -418,6 +418,8 @@
 import {
   getOriginUnitProject,
   exportOriginUnitProject,
+  getLogOriginUnitProject,
+  getFileDetailsOriginUnitProject
 } from '@/api/project/unitproject/originunitproject/manage'
 import { getProductLineList } from '@/api/bom/productline/productline'
 import { getNationalityList } from '@/api/utils/geography/nationality'
@@ -519,14 +521,56 @@ export default {
 
     // 查看图片
     handlePhotoView(userValue) {
-      console.log(userValue)
+      this.fileDetails = []
       this.photoViewVisible = true
-      this.fileDetails = userValue.file_details
+      const data = {
+        id: userValue.id
+      }
+      getFileDetailsOriginUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.fileDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-    // 查看图片
+    // 查看日志
     logView(userValue) {
       this.logViewVisible = true
-      this.logDetails = userValue.log_details
+      const data = {
+        id: userValue.id
+      }
+      getLogOriginUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.logDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
 
     // 导出

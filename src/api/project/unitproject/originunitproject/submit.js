@@ -57,6 +57,15 @@ export function checkOriginUnitProjectSubmit(data) {
   })
 }
 
+// 修复工单
+export function fixOriginUnitProjectSubmit(data) {
+  return request({
+    url: `/project/unitproject/originunitprojectsubmit/fix/`,
+    method: 'patch',
+    data
+  })
+}
+
 // 取消工单
 export function rejectOriginUnitProjectSubmit(data) {
   return request({

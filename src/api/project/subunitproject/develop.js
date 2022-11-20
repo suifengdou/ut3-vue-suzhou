@@ -84,7 +84,7 @@ export function setTagSubUnitProjectDevelop(data) {
   })
 }
 
-// 标记工单
+// 重置标记
 export function resetTagSubUnitProjectDevelop(data) {
   return request({
     url: `/project/subunitproject/subunitprojectdevelop/reset_tag/`,
@@ -92,3 +92,15 @@ export function resetTagSubUnitProjectDevelop(data) {
     data
   })
 }
+
+// 创建手板项目单
+export function CreatePhototypeSubUnitProjectDevelop(data) {
+  return request({
+    url: `/project/subunitproject/subunitprojectdevelop/create_phototype/`,
+    method: 'patch',
+    data
+  })
+}
+
+
+

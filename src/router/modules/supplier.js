@@ -10,8 +10,8 @@ const spplierRouter = {
   meta: { title: '供应商管理', icon: 'peoples', roles: ['AllPrivileges'] },
   children: [
     {
-      path: '/handboardsup',
-      component: () => import('@/views/supplier/handboardsup'),
+      path: '/phototype',
+      component: () => import('@/views/supplier/phototypesup'),
       name: '手板商',
       meta: { title: '手板商', icon: 'people', roles: ['AllPrivileges'] }
     },

@@ -25,7 +25,7 @@
         <el-col :span="4" class="titleBar">
           <div class="grid-content bg-purple">
             <el-tooltip class="item" effect="dark" content="快捷搜索" placement="top-start">
-              <el-input v-model="params.name__name" class="grid-content bg-purple" placeholder="请输入整机版本名" @keyup.enter.native="fetchData">
+              <el-input v-model="params.name" class="grid-content bg-purple" placeholder="请输入整机版本名" @keyup.enter.native="fetchData">
                 <el-button slot="append" icon="el-icon-search" @click="fetchData" />
               </el-input>
             </el-tooltip>
@@ -61,13 +61,13 @@
                   <el-form ref="filterForm" :model="params" label-width="80px">
                     <el-row :gutter="20">
                       <el-col :span="6"><el-form-item label="版本编码" prop="name">
-                        <el-input v-model="params.name__code" type="text" />
+                        <el-input v-model="params.code" type="text" />
                       </el-form-item></el-col>
                       <el-col :span="3"><el-form-item label="版本序号" prop="name">
-                        <el-input v-model="params.name__number_min" placeholder="最小值" type="text" />
+                        <el-input v-model="params.units_version__number_min" placeholder="最小值" type="text" />
                       </el-form-item></el-col>
                       <el-col :span="2">
-                        <el-input v-model="params.name__number_max" placeholder="最大值" type="text" />
+                        <el-input v-model="params.units_version__number_max" placeholder="最大值" type="text" />
                       </el-col>
                       <el-col :span="1" />
                       <el-col :span="6" />
@@ -118,15 +118,15 @@
                         </el-select>
                       </el-form-item></el-col>
                       <el-col :span="6"><el-form-item label="国别" prop="name">
-                        <el-input v-model="params.name__units__nationality__name" type="text" />
+                        <el-input v-model="params.units_version__units__nationality__name" type="text" />
                       </el-form-item></el-col>
                     </el-row>
                     <el-row :gutter="20">
                       <el-col :span="3"><el-form-item label="整机排序" prop="name">
-                        <el-input v-model="params.name__units__unit_number_min" placeholder="最小值" type="text" />
+                        <el-input v-model="params.units_version__units__unit_number_min" placeholder="最小值" type="text" />
                       </el-form-item></el-col>
                       <el-col :span="2">
-                        <el-input v-model="params.name__units__unit_number_max" placeholder="最大值" type="text" />
+                        <el-input v-model="params.units_version__units__unit_number_max" placeholder="最大值" type="text" />
                       </el-col>
                       <el-col :span="1" />
                       <el-col :span="6"><el-form-item label="创建者" prop="creator">
@@ -189,7 +189,7 @@
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.name }}</span>
+            <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -198,7 +198,7 @@
           sortable="custom"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.code }}</span>
+            <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -234,7 +234,7 @@
           prop="name"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.nationality }}</span>
+            <span>{{ scope.row.units_version.nationality }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -255,14 +255,14 @@
           label="系列内排序"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.serial_number }}</span>
+            <span>{{ scope.row.units_version.serial_number }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="整机排序"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.unit_number }}</span>
+            <span>{{ scope.row.units_version.unit_number }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -425,7 +425,7 @@
     <el-dialog
       title="日志查看"
       :visible.sync="logViewVisible"
-      width="70%"
+      width="60%"
       border
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -444,7 +444,7 @@
           <el-table-column
             label="操作内容"
             prop="content"
-            width="120px"
+            width="520px"
           >
             <template slot-scope="scope">
               <span>{{ scope.row.content }}</span>
@@ -484,6 +484,7 @@ import {
   setTagUnitProjectDevelop,
   resetTagUnitProjectDevelop
 } from '@/api/project/unitproject/unitproject/develop'
+import { getLogUnitProject, getFileDetailsUnitProject } from '@/api/project/unitproject/unitproject/manage'
 import { getProductLineList } from '@/api/bom/productline/productline'
 import { getNationalityList } from '@/api/utils/geography/nationality'
 import { deleteUPPhoto } from '@/api/project/unitproject/unitproject/upphoto'
@@ -680,14 +681,57 @@ export default {
     },
     // 查看图片
     handlePhotoView(userValue) {
-      console.log(userValue)
+      this.fileDetails = []
       this.photoViewVisible = true
-      this.fileDetails = userValue.file_details
+      const data = {
+        id: userValue.id
+      }
+      getFileDetailsUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.fileDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-    // 查看图片
+    // 查看日志
     logView(userValue) {
+      this.logDetails = []
       this.logViewVisible = true
-      this.logDetails = userValue.log_details
+      const data = {
+        id: userValue.id
+      }
+      getLogUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.logDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
 
     // 导入

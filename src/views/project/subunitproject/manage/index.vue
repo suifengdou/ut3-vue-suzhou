@@ -2,26 +2,6 @@
   <div class="subunitproject-prepare-container">
     <div class="tableTitle">
       <el-row :gutter="20">
-        <el-col :span="6" class="titleBar">
-          <div class="grid-content bg-purple">
-            <div id="operationBoard">
-              <el-tooltip class="item" effect="dark" content="点击展开操作列表，可执行对应操作" placement="top-start">
-                <el-dropdown split-button type="primary" placement="bottom-end" trigger="click">
-                  选中所有的{{ selectNum }}项
-                  <el-dropdown-menu slot="dropdown" trigger="click">
-                    <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleSetTag">标记处理</el-button></el-dropdown-item>
-                    <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleResetTag">标记重置</el-button></el-dropdown-item>
-                    <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleConfirm">确认项目</el-button></el-dropdown-item>
-                    <el-dropdown-item><el-button type="danger" icon="el-icon-close" size="mini" round @click="handleReject">驳回项目</el-button></el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="点击选中所有筛选出的订单" placement="top-start">
-                <el-button @click="checkAllOption">全选{{ totalNum }}项</el-button>
-              </el-tooltip>
-            </div>
-          </div>
-        </el-col>
         <el-col :span="4" class="titleBar">
           <div class="grid-content bg-purple">
             <el-tooltip class="item" effect="dark" content="快捷搜索" placement="top-start">
@@ -171,9 +151,7 @@
         style="width: 100%"
         :row-style="rowStyle"
         @sort-change="onSortChange"
-        @selection-change="handleSelectionChange"
       >
-        <el-table-column ref="checkall" type="selection" label="选项" />
         <el-table-column
           label="ID"
         >
@@ -484,15 +462,11 @@
 
 <script>
 import {
-  getSubUnitProjectPrepare,
-  exportSubUnitProjectPrepare,
-  excelImportSubUnitProjectPrepare,
-  checkSubUnitProjectPrepare,
-  rejectSubUnitProjectPrepare,
-  photoImportSubUnitProjectPrepare,
-  setTagSubUnitProjectPrepare,
-  resetTagSubUnitProjectPrepare
-} from '@/api/project/subunitproject/prepare'
+  getSubUnitProject,
+  exportSubUnitProject,
+  getLogSubUnitProject,
+  getFileDetailsSubUnitProject
+} from '@/api/project/subunitproject/manage'
 import { getProductLineList } from '@/api/bom/productline/productline'
 import { getNationalityList } from '@/api/utils/geography/nationality'
 import { deleteUPPhoto } from '@/api/project/unitproject/unitproject/upphoto'
@@ -574,7 +548,7 @@ export default {
           this.params.created_time_before = moment.parseZone(this.params.created_time[1]).local().format('YYYY-MM-DD HH:MM:SS')
         }
       }
-      getSubUnitProjectPrepare(this.params).then(
+      getSubUnitProject(this.params).then(
         res => {
           this.DataList = res.data.results
           this.totalNum = res.data.count
@@ -658,7 +632,7 @@ export default {
         }
       }
       this.tableLoading = true
-      photoImportSubUnitProjectPrepare(importformData, config).then(
+      photoImportSubUnitProject(importformData, config).then(
         res => {
           this.$notify({
             title: '导入结果',
@@ -687,16 +661,59 @@ export default {
       this.importFiles = []
       this.importVisible = false
     },
-    // 查看图片
+    // 查看文档
     handlePhotoView(userValue) {
-      console.log(userValue)
+      this.fileDetails = []
       this.photoViewVisible = true
-      this.fileDetails = userValue.file_details
+      const data = {
+        id: userValue.id
+      }
+      getFileDetailsSubUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.fileDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-    // 查看图片
+    // 查看日志
     logView(userValue) {
+      this.logDetails = []
       this.logViewVisible = true
-      this.logDetails = userValue.log_details
+      const data = {
+        id: userValue.id
+      }
+      getLogSubUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.logDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
 
     // 导入
@@ -730,7 +747,7 @@ export default {
                 'Content-Type': 'multipart/form-data'
               }
             }
-            excelImportSubUnitProjectPrepare(importformData, config).then(
+            excelImportSubUnitProject(importformData, config).then(
               res => {
                 this.$notify({
                   title: '导入结果',
@@ -799,7 +816,7 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true
             instance.confirmButtonText = '执行中...'
-            exportSubUnitProjectPrepare(this.params).then(
+            exportSubUnitProject(this.params).then(
               res => {
                 res.data = res.data.map(item => {
                   return {
@@ -870,7 +887,7 @@ export default {
     handleSetTag() {
       this.tableLoading = true
       if (this.params.allSelectTag === 1) {
-        setTagSubUnitProjectPrepare(this.params).then(
+        setTagSubUnitProject(this.params).then(
           res => {
             if (res.data.successful !== 0) {
               this.$notify({
@@ -925,7 +942,7 @@ export default {
         }
         const ids = this.multipleSelection.map(item => item.id)
         this.params.ids = ids
-        setTagSubUnitProjectPrepare(this.params).then(
+        setTagSubUnitProject(this.params).then(
           res => {
             if (res.data.successful !== 0) {
               this.$notify({
@@ -976,7 +993,7 @@ export default {
     handleResetTag() {
       this.tableLoading = true
       if (this.params.allSelectTag === 1) {
-        resetTagSubUnitProjectPrepare(this.params).then(
+        resetTagSubUnitProject(this.params).then(
           res => {
             if (res.data.successful !== 0) {
               this.$notify({
@@ -1031,7 +1048,7 @@ export default {
         }
         const ids = this.multipleSelection.map(item => item.id)
         this.params.ids = ids
-        resetTagSubUnitProjectPrepare(this.params).then(
+        resetTagSubUnitProject(this.params).then(
           res => {
             if (res.data.successful !== 0) {
               this.$notify({
@@ -1077,297 +1094,6 @@ export default {
           }
         )
       }
-    },
-    // 审核单据
-    handleConfirm() {
-      const h = this.$createElement
-      let resultMessage, resultType
-      this.$msgbox({
-        title: '确认项目',
-        message: h('p', null, [
-          h('h3', { style: 'color: teal' }, '特别注意：'),
-          h('hr', null, ''),
-          h('span', null, '确认项目，如果确认项目，则此项目无法驳回，已立项项目无法驳回。'),
-          h('b', { style: 'color: red' }, '请务必核实，确认则无法驳回！'),
-          h('hr', null, '')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            this.tableLoading = true
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            if (this.params.allSelectTag === 1) {
-              checkSubUnitProjectPrepare(this.params).then(
-                res => {
-                  if (res.data.successful !== 0) {
-                    this.$notify({
-                      title: '确认成功',
-                      message: `确认成功条数：${res.data.successful}`,
-                      type: 'success',
-                      offset: 70,
-                      duration: 3000
-                    })
-                  }
-                  if (res.data.false !== 0) {
-                    this.$notify({
-                      title: '确认消失败',
-                      message: `确认败条数：${res.data.false}`,
-                      type: 'error',
-                      offset: 140,
-                      duration: 0
-                    })
-                    this.$notify({
-                      title: '失败错误详情',
-                      message: res.data.error,
-                      type: 'error',
-                      offset: 210,
-                      duration: 0
-                    })
-                  }
-                  delete this.params.allSelectTag
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }).catch(
-                (error) => {
-                  this.$notify({
-                    title: '异常错误详情',
-                    message: error.data,
-                    type: 'error',
-                    offset: 210,
-                    duration: 0
-                  })
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }
-              )
-            } else {
-              if (typeof (this.multipleSelection) === 'undefined') {
-                this.$notify({
-                  title: '错误详情',
-                  message: '未选择项目无法取消',
-                  type: 'error',
-                  offset: 70,
-                  duration: 0
-                })
-                instance.confirmButtonLoading = false
-                done()
-                this.fetchData()
-              }
-              const ids = this.multipleSelection.map(item => item.id)
-              this.params.ids = ids
-              checkSubUnitProjectPrepare(this.params).then(
-                res => {
-                  if (res.data.successful !== 0) {
-                    this.$notify({
-                      title: '确认成功',
-                      message: `确认成功条数：${res.data.successful}`,
-                      type: 'success',
-                      offset: 70,
-                      duration: 3000
-                    })
-                  }
-                  if (res.data.false !== 0) {
-                    this.$notify({
-                      title: '确认失败',
-                      message: `确认败条数：${res.data.false}`,
-                      type: 'error',
-                      offset: 140,
-                      duration: 0
-                    })
-                    this.$notify({
-                      title: '失败错误详情',
-                      message: res.data.error,
-                      type: 'error',
-                      offset: 210,
-                      duration: 0
-                    })
-                  }
-                  delete this.params.allSelectTag
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }).catch(
-                (error) => {
-                  this.$notify({
-                    title: '异常错误详情',
-                    message: error.data,
-                    type: 'error',
-                    offset: 210,
-                    duration: 0
-                  })
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }
-              )
-            }
-          } else {
-            done()
-            this.fetchData()
-          }
-        }
-      }).then().catch(
-        (error) => {
-          this.$notify({
-            title: '异常错误详情',
-            message: error.data,
-            type: 'error',
-            offset: 210,
-            duration: 0
-          })
-          this.fetchData()
-        }
-      )
-    },
-    handleReject() {
-      const h = this.$createElement
-      let resultMessage, resultType
-      this.$msgbox({
-        title: '驳回项目',
-        message: h('p', null, [
-          h('h3', { style: 'color: teal' }, '特别注意：'),
-          h('hr', null, ''),
-          h('span', null, '驳回项目，则此项目在待确认状态下上传的文件将全部丢失'),
-          h('b',  { style: 'color: red' }, '如果是版本迭代类型则直接取消，无法恢复，请慎重选择！'),
-          h('hr', null, '')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            this.tableLoading = true
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '执行中...'
-            if (this.params.allSelectTag === 1) {
-              rejectSubUnitProjectPrepare(this.params).then(
-                res => {
-                  if (res.data.successful !== 0) {
-                    this.$notify({
-                      title: '驳回成功',
-                      message: `驳回成功条数：${res.data.successful}`,
-                      type: 'success',
-                      offset: 70,
-                      duration: 3000
-                    })
-                  }
-                  if (res.data.false !== 0) {
-                    this.$notify({
-                      title: '驳回消失败',
-                      message: `驳回败条数：${res.data.false}`,
-                      type: 'error',
-                      offset: 140,
-                      duration: 0
-                    })
-                    this.$notify({
-                      title: '失败错误详情',
-                      message: res.data.error,
-                      type: 'error',
-                      offset: 210,
-                      duration: 0
-                    })
-                  }
-                  delete this.params.allSelectTag
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }).catch(
-                (error) => {
-                  this.$notify({
-                    title: '异常错误详情',
-                    message: error.data,
-                    type: 'error',
-                    offset: 210,
-                    duration: 0
-                  })
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }
-              )
-            } else {
-              if (typeof (this.multipleSelection) === 'undefined') {
-                this.$notify({
-                  title: '错误详情',
-                  message: '未选择项目无法取消',
-                  type: 'error',
-                  offset: 70,
-                  duration: 0
-                })
-                instance.confirmButtonLoading = false
-                done()
-                this.fetchData()
-              }
-              const ids = this.multipleSelection.map(item => item.id)
-              this.params.ids = ids
-              rejectSubUnitProjectPrepare(this.params).then(
-                res => {
-                  if (res.data.successful !== 0) {
-                    this.$notify({
-                      title: '驳回成功',
-                      message: `驳回成功条数：${res.data.successful}`,
-                      type: 'success',
-                      offset: 70,
-                      duration: 3000
-                    })
-                  }
-                  if (res.data.false !== 0) {
-                    this.$notify({
-                      title: '驳回失败',
-                      message: `驳回败条数：${res.data.false}`,
-                      type: 'error',
-                      offset: 140,
-                      duration: 0
-                    })
-                    this.$notify({
-                      title: '失败错误详情',
-                      message: res.data.error,
-                      type: 'error',
-                      offset: 210,
-                      duration: 0
-                    })
-                  }
-                  delete this.params.allSelectTag
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }).catch(
-                (error) => {
-                  this.$notify({
-                    title: '异常错误详情',
-                    message: error.data,
-                    type: 'error',
-                    offset: 210,
-                    duration: 0
-                  })
-                  instance.confirmButtonLoading = false
-                  done()
-                  this.fetchData()
-                }
-              )
-            }
-          } else {
-            done()
-            this.fetchData()
-          }
-        }
-      }).then().catch(
-        (error) => {
-          this.$notify({
-            title: '异常错误详情',
-            message: error.data,
-            type: 'error',
-            offset: 210,
-            duration: 0
-          })
-          this.fetchData()
-        }
-      )
     },
     // 货品搜索
     remoteMethodProductLine(query) {

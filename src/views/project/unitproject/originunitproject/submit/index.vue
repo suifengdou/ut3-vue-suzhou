@@ -10,6 +10,7 @@
                   选中所有的{{ selectNum }}项
                   <el-dropdown-menu slot="dropdown" trigger="click">
                     <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleCheck">审核项目</el-button></el-dropdown-item>
+                    <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleFix">修复项目</el-button></el-dropdown-item>
                     <el-dropdown-item><el-button type="danger" icon="el-icon-close" size="mini" round @click="handleReject">取消项目</el-button></el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -695,7 +696,7 @@
     <el-dialog
       title="日志查看"
       :visible.sync="logViewVisible"
-      width="70%"
+      width="60%"
       border
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -714,7 +715,7 @@
           <el-table-column
             label="操作内容"
             prop="content"
-            width="120px"
+            width="520px"
           >
             <template slot-scope="scope">
               <span>{{ scope.row.content }}</span>
@@ -751,8 +752,10 @@ import {
   excelImportOriginUnitProjectSubmit,
   checkOriginUnitProjectSubmit,
   rejectOriginUnitProjectSubmit,
-  photoImportOriginUnitProjectSubmit
+  photoImportOriginUnitProjectSubmit,
+  fixOriginUnitProjectSubmit
 } from '@/api/project/unitproject/originunitproject/submit'
+import { getLogOriginUnitProject, getFileDetailsOriginUnitProject } from '@/api/project/unitproject/originunitproject/manage'
 import { getProductLineList } from '@/api/bom/productline/productline'
 import { getNationalityList } from '@/api/utils/geography/nationality'
 import { deleteOUPPhoto } from '@/api/project/unitproject/originunitproject/oupphoto'
@@ -1033,16 +1036,60 @@ export default {
       this.importFiles = []
       this.importVisible = false
     },
-    // 查看图片
+
+        // 查看图片
     handlePhotoView(userValue) {
-      console.log(userValue)
+      this.fileDetails = []
       this.photoViewVisible = true
-      this.fileDetails = userValue.file_details
+      const data = {
+        id: userValue.id
+      }
+      getFileDetailsOriginUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.fileDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-    // 查看图片
+    // 查看日志
     logView(userValue) {
+      this.logDetails = []
       this.logViewVisible = true
-      this.logDetails = userValue.log_details
+      const data = {
+        id: userValue.id
+      }
+      getLogOriginUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.logDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
 
     // 导入
@@ -1299,6 +1346,112 @@ export default {
               this.$notify({
                 title: '审核失败',
                 message: `审核失败条数：${res.data.false}`,
+                type: 'error',
+                offset: 140,
+                duration: 0
+              })
+              this.$notify({
+                title: '错误详情',
+                message: res.data.error,
+                type: 'error',
+                offset: 210,
+                duration: 0
+              })
+            }
+            console.log(this.params)
+            console.log(this.params.ids)
+
+            delete this.params.ids
+            this.fetchData()
+          }).catch(
+          (error) => {
+            delete this.params.ids
+            this.$notify({
+              title: '错误详情',
+              message: error.data,
+              type: 'error',
+              offset: 210,
+              duration: 0
+            })
+            this.fetchData()
+          }
+        )
+      }
+    },
+    // 审核单据
+    handleFix() {
+      this.tableLoading = true
+      if (this.params.allSelectTag === 1) {
+        fixOriginUnitProjectSubmit(this.params).then(
+          res => {
+            if (res.data.successful !== 0) {
+              this.$notify({
+                title: '修复成功',
+                message: `修复成功条数：${res.data.successful}`,
+                type: 'success',
+                offset: 70,
+                duration: 3000
+              })
+            }
+            if (res.data.false !== 0) {
+              this.$notify({
+                title: '修复失败',
+                message: `修复失败条数：${res.data.false}`,
+                type: 'error',
+                offset: 140,
+                duration: 0
+              })
+              this.$notify({
+                title: '错误详情',
+                message: res.data.error,
+                type: 'error',
+                offset: 210,
+                duration: 0
+              })
+            }
+            delete this.params.allSelectTag
+            this.fetchData()
+          }).catch(
+          (error) => {
+            this.$notify({
+              title: '错误详情',
+              message: error.data,
+              type: 'error',
+              offset: 210,
+              duration: 0
+            })
+            this.fetchData()
+          }
+        )
+      } else {
+        console.log(this.multipleSelection)
+        if (typeof (this.multipleSelection) === 'undefined') {
+          this.$notify({
+            title: '错误详情',
+            message: '未选择订单无法审核',
+            type: 'error',
+            offset: 70,
+            duration: 0
+          })
+          this.fetchData()
+        }
+        const ids = this.multipleSelection.map(item => item.id)
+        this.params.ids = ids
+        fixOriginUnitProjectSubmit(this.params).then(
+          res => {
+            if (res.data.successful !== 0) {
+              this.$notify({
+                title: '修复成功',
+                message: `修复成功条数：${res.data.successful}`,
+                type: 'success',
+                offset: 70,
+                duration: 3000
+              })
+            }
+            if (res.data.false !== 0) {
+              this.$notify({
+                title: '修复失败',
+                message: `修复失败条数：${res.data.false}`,
                 type: 'error',
                 offset: 140,
                 duration: 0

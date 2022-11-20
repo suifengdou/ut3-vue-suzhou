@@ -11,7 +11,7 @@
                   <el-dropdown-menu slot="dropdown" trigger="click">
                     <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleSetTag">标记处理</el-button></el-dropdown-item>
                     <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleResetTag">标记重置</el-button></el-dropdown-item>
-                    <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleFix">修复组项</el-button></el-dropdown-item>
+                    <el-dropdown-item><el-button type="success" icon="el-icon-check" size="mini" round @click="handleCheck">确认组项</el-button></el-dropdown-item>
                     <el-dropdown-item><el-button type="danger" icon="el-icon-close" size="mini" round @click="handleReject">驳回项目</el-button></el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -25,7 +25,7 @@
         <el-col :span="4" class="titleBar">
           <div class="grid-content bg-purple">
             <el-tooltip class="item" effect="dark" content="快捷搜索" placement="top-start">
-              <el-input v-model="params.name__name" class="grid-content bg-purple" placeholder="请输入整机版本名" @keyup.enter.native="fetchData">
+              <el-input v-model="params.component_version__name" class="grid-content bg-purple" placeholder="请输入整机版本名" @keyup.enter.native="fetchData">
                 <el-button slot="append" icon="el-icon-search" @click="fetchData" />
               </el-input>
             </el-tooltip>
@@ -205,13 +205,13 @@
         </el-table-column>
         <el-table-column
           label="整机版本编码"
-          prop="subunits_project"
+          prop="subunit_project"
           width="120px"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.subunits_project.unit_code }}</span>
+            <span>{{ scope.row.subunit_project.unit_code }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -221,30 +221,19 @@
           sortable="custom"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.subunits_project.subunit_code }}</span>
+            <span>{{ scope.row.subunit_project.subunit_code }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="子项版本名称"
-          prop="subunits_project"
+          prop="subunit_project"
           sortable="custom"
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.subunits_project.subunit_name }}</span>
+            <span>{{ scope.row.subunit_project.subunit_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          label="类型"
-          prop="category"
-          sortable="custom"
-          :sort-orders="['ascending','descending']"
-        >
-          <template slot-scope="scope">
-            <span>{{ scope.row.category.name }}</span>
-          </template>
-        </el-table-column>
-        
         <el-table-column
           label="产品线名称"
           prop="product_line"
@@ -270,10 +259,10 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="组项管理"
+          label="物料管理"
         >
           <template slot-scope="scope">
-            <el-button type="danger" size="mini" @click="handleEdit(scope.row)">组项管理</el-button>
+            <el-button type="danger" size="mini" @click="handleEdit(scope.row)">物料管理</el-button>
           </template>
         </el-table-column>
         <el-table-column
@@ -335,7 +324,7 @@
     </div>
     <!--修改信息模态窗-->
     <el-dialog
-      title="管理组项项目"
+      title="物料管理+"
       width="80%"
       :visible.sync="dialogVisibleEdit"
       :close-on-click-modal="false"
@@ -355,19 +344,27 @@
                 <span>项目信息</span>
               </div>
               <el-row :gutter="20">
-                <el-col :span="8"><el-form-item label="产品线" prop="receiver">
+                <el-col :span="8"><el-form-item label="产品线" prop="product_line">
                   <span>{{ formEdit.product_line }}</span>
                 </el-form-item></el-col>
-                <el-col :span="8"><el-form-item label="子项名" prop="mobile">
-                  <span>{{ formEdit.subunits_version }}</span>
+                <el-col :span="8"><el-form-item label="子项名" prop="subunit_project">
+                  <span>{{ formEdit.subunit_project }}</span>
                 </el-form-item></el-col>
               </el-row>
               <el-row :gutter="20">
                 <el-col :span="8"><el-form-item label="项目类别" prop="address">
                   <span>{{ formEdit.category }}</span>
                 </el-form-item></el-col>
-                <el-col :span="8"><el-form-item label="子项类别" prop="m_sn">
-                  <span>{{ formEdit.type }}</span>
+                <el-col :span="8"><el-form-item label="创建人" prop="creator">
+                  <span>{{ formEdit.creator }}</span>
+                </el-form-item></el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="8"><el-form-item label="组项名称" prop="component_version">
+                  <span>{{ formEdit.component_version }}</span>
+                </el-form-item></el-col>
+                <el-col :span="8"><el-form-item label="组项类型" prop="component_category">
+                  <span>{{ formEdit.component_category }}</span>
                 </el-form-item></el-col>
               </el-row>
             </el-card>
@@ -375,7 +372,7 @@
               <div slot="header" class="clearfix">
                 <span>组项项目信息</span>
               </div>
-              <el-row :gutter="20">
+              <!-- <el-row :gutter="20">
                 <el-col :span="2"><el-button
                   type="success"
                   icon="el-icon-delete"
@@ -385,38 +382,38 @@
                 <el-col :span="10" />
                 <el-col :span="4" />
                 <el-col :span="4" />
-              </el-row>
+              </el-row> -->
               <el-table
                 ref="tableEdit"
                 border
-                :data="componentDetailsTable"
+                :data="initialPartsDetailsTable"
                 :row-class-name="rowClassName"
                 @selection-change="handleDetailSelectionChangeEdit"
               >
                 <el-table-column type="selection" width="30" align="center" />
                 <el-table-column label="序号" align="center" prop="xh" width="50">
                   <template slot-scope="scope">
-                    <span>{{ componentDetailsTable[scope.row.xh-1].xh }}</span>
+                    <span>{{ initialPartsDetailsTable[scope.row.xh-1].xh }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="ID" width="250" prop="id">
                   <template slot-scope="scope">
-                    <span>{{ componentDetailsTable[scope.row.xh-1].id }}</span>
+                    <span>{{ initialPartsDetailsTable[scope.row.xh-1].id }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="ID" width="250" prop="name">
                   <template slot-scope="scope">
-                    <span>{{ componentDetailsTable[scope.row.xh-1].name }}</span>
+                    <span>{{ initialPartsDetailsTable[scope.row.xh-1].name }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="备注" width="250" prop="memo">
                   <template slot-scope="scope">
-                    <span>{{ componentDetailsTable[scope.row.xh-1].memo }}</span>
+                    <span>{{ initialPartsDetailsTable[scope.row.xh-1].memo }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="创建时间" width="250" prop="created_time">
                   <template slot-scope="scope">
-                    <span>{{ componentDetailsTable[scope.row.xh-1].created_time }}</span>
+                    <span>{{ initialPartsDetailsTable[scope.row.xh-1].created_time }}</span>
                   </template>
                 </el-table-column>
               </el-table>
@@ -608,6 +605,7 @@ import {
   setTagComponentProjectPrepare,
   resetTagComponentProjectPrepare
 } from '@/api/project/componentproject/prepare'
+import { getLogComponentProject, getFileDetailsComponentProject } from '@/api/project/componentproject/manage'
 import { getProductLineList } from '@/api/bom/productline/productline'
 import { getNationalityList } from '@/api/utils/geography/nationality'
 import { deleteSUPFiles } from '@/api/project/subunitproject/supfiles'
@@ -639,7 +637,7 @@ export default {
       formAdd: {},
       formEdit: {},
       OrderDetailsList: [],
-      componentDetailsTable: [],
+      initialPartsDetailsTable: [],
       checkedDetail: [],
       checkedDetailEdit: [],
       photoData: {},
@@ -806,16 +804,57 @@ export default {
       this.importFiles = []
       this.importVisible = false
     },
-    // 查看图片
+    // 查看文档
     handlePhotoView(userValue) {
-      console.log(userValue)
+      this.fileDetails = []
       this.photoViewVisible = true
-      this.fileDetails = userValue.file_details
+      const data = {
+        id: userValue.id
+      }
+      getFileDetailsComponentProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.fileDetails = res.data
+        }).catch(
+        (error) => {
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-    // 查看图片
+    // 查看日志
     logView(userValue) {
+      this.logDetails = []
       this.logViewVisible = true
-      this.logDetails = userValue.log_details
+      const data = {
+        id: userValue.id
+      }
+      getLogComponentProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.logDetails = res.data
+        }).catch(
+        (error) => {
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
 
     // 导入
@@ -922,18 +961,33 @@ export default {
               res => {
                 res.data = res.data.map(item => {
                   return {
-                    整机版本名: item.name.name,
-                    整机版本编码: item.name.code,
-                    类型: item.category.name,
-                    是否定名: item.name.is_named,
-                    国别: item.name.nationality,
-                    系列排序: item.name.serial_number,
-                    整机排序: item.name.unit_number,
-                    级别: item.level.name,
-                    备注: item.memo,
-                    创建时间: item.create_time,
-                    更新时间: item.update_time,
-                    创建者: item.creator
+                    组项版本名称: item.component_version.name,
+                    组项版本编码: item.component_version.code,
+                    整机版本编码: item.subunit_project.unit_code,
+                    子项版本编码: item.subunit_project.subunit_code,
+                    子项版本名称: item.subunit_project.subunit_name,
+                    组项单据类型: item.category.name,
+                    产品线名称: item.product_line.name,
+                    组项类型: item.component_category.name,
+                    单据类型: "",
+                    物料名称: "",
+                    物料编码: "",
+                    类型: "",
+                    文件名: "",
+                    爆炸图号: "",
+                    规格: "",
+                    工艺: "",
+                    原材料: "",
+                    成型收缩率: "",
+                    材料色号: "",
+                    克重: "",
+                    用量: "",
+                    是否喷漆: "",
+                    漆色号: "",
+                    是否组件: "",
+                    分组序号: "",
+                    是否制板: "",
+                    备注: "",
                   }
                 })
                 const ws = XLSX.utils.json_to_sheet(res.data)
@@ -963,6 +1017,7 @@ export default {
           type: resultType,
           message: '最终结果: ' + resultMessage
         })
+        this.fetchData()
       }).catch(
         (error) => {
           console.log(error)
@@ -1198,7 +1253,7 @@ export default {
       }
     },
     // 审核单据
-    handleFix() {
+    handleCheck() {
       const h = this.$createElement
       let resultMessage, resultType
       this.$msgbox({
@@ -1206,8 +1261,8 @@ export default {
         message: h('p', null, [
           h('h3', { style: 'color: teal' }, '特别注意：'),
           h('hr', null, ''),
-          h('span', null, '系统会自动创建系列关联的对应组件。'),
-          h('b', { style: 'color: red' }, '新建内容可查看日志！'),
+          h('span', null, '组件确认之后即可以导入物料。非开发中状态不可导入物料。确认后不可驳回！'),
+          h('b', { style: 'color: red' }, '操作内容会记录日志！'),
           h('hr', null, '')
         ]),
         showCancelButton: true,
@@ -1599,7 +1654,7 @@ export default {
     // 表格样式
     rowStyle({ row, rowIndex}) {
       let row_style = {}
-      if (row.process_tag === 1) {
+      if (row.process_tag == 1) {
         row_style = {
           backgroundColor: 'palegreen'
         }
@@ -1671,14 +1726,16 @@ export default {
         this.formEdit = { ...values }
         this.dialogVisibleEdit = true
         this.formEdit.category = this.formEdit.category.name
+        this.formEdit.creator = this.formEdit.creator.name
         this.formEdit.product_line = this.formEdit.product_line.name
-        this.formEdit.type = this.formEdit.type.name
-        this.formEdit.subunits_version = this.formEdit.subunits_version.name
-        this.componentDetailsTable = []
+        this.formEdit.subunit_project = this.formEdit.subunit_project.subunit_name
+        this.formEdit.component_category = this.formEdit.component_category.name
+        this.formEdit.component_version = this.formEdit.component_version.name
+        this.initialPartsDetailsTable = []
         let index
-        for (index in this.formEdit.component_details) {
-          this.formEdit.component_details[index].xh = index + 1
-          this.componentDetailsTable.push(this.formEdit.component_details[index])
+        for (index in this.formEdit.initial_parts_details) {
+          this.formEdit.initial_parts_details[index].xh = index + 1
+          this.initialPartsDetailsTable.push(this.formEdit.initial_parts_details[index])
         }
       },
     // 提交编辑完成的数据
@@ -1690,7 +1747,7 @@ export default {
         console.log('在编辑')
         let id = this.formEdit.id
         const data = {
-          component_details: this.componentDetailsTable
+          initial_parts_details: this.initialPartsDetailsTable
         }
         console.log(data)
         updateComponentProjectPrepare(id, data).then(
@@ -1719,7 +1776,7 @@ export default {
     },
     // 删除编辑全部表单货品项
     handleDeleteAllDetails() {
-      this.componentDetailsTable = undefined
+      this.initialPartsDetailsTable = undefined
     },
     // 货品列表顺序
     rowClassName({ row, rowIndex }) {
@@ -1741,7 +1798,7 @@ export default {
           confirmButtonText: '确定'
         })
       } else {
-        this.componentDetailsTable.splice(this.checkedDetailEdit[0].xh - 1, 1)
+        this.initialPartsDetailsTable.splice(this.checkedDetailEdit[0].xh - 1, 1)
       }
     },
     resetParams() {

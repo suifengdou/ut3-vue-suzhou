@@ -1569,12 +1569,10 @@ export default {
     },
     // 提交编辑完成的数据
     confirmProcess(row) {
-      console.log(row)
       const { id, ...details } = row
       const data = {
         process_tag: details.process_tag.id
       }
-      console.log(data, id)
       updateWorkOrderHandle(id, data).then(
         () => {
           this.$notify({
@@ -1596,7 +1594,6 @@ export default {
           this.fetchData()
         }
       )
-
     },
     rowStyle({ row, rowIndex}) {
       let row_style = {}

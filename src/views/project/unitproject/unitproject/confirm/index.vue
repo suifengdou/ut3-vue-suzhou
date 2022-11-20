@@ -190,17 +190,17 @@
           :sort-orders="['ascending','descending']"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.name }}</span>
+            <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="整机版本编码"
-          prop="name"
+          prop="code"
           width="150px"
           sortable="custom"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.code }}</span>
+            <span>{{ scope.row.code }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -243,10 +243,10 @@
 
         <el-table-column
           label="国别"
-          prop="name"
+          prop="units_version"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.nationality }}</span>
+            <span>{{ scope.row.units_version.nationality }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -267,14 +267,14 @@
           label="系列内排序"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.serial_number }}</span>
+            <span>{{ scope.row.units_version.serial_number }}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="整机排序"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.name.unit_number }}</span>
+            <span>{{ scope.row.units_version.unit_number }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -437,7 +437,7 @@
     <el-dialog
       title="日志查看"
       :visible.sync="logViewVisible"
-      width="70%"
+      width="60%"
       border
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -456,7 +456,7 @@
           <el-table-column
             label="操作内容"
             prop="content"
-            width="120px"
+            width="520px"
           >
             <template slot-scope="scope">
               <span>{{ scope.row.content }}</span>
@@ -496,6 +496,7 @@ import {
   setTagUnitProjectConfirm,
   resetTagUnitProjectConfirm
 } from '@/api/project/unitproject/unitproject/confirm'
+import { getLogUnitProject, getFileDetailsUnitProject } from '@/api/project/unitproject/unitproject/manage'
 import { getProductLineList } from '@/api/bom/productline/productline'
 import { getNationalityList } from '@/api/utils/geography/nationality'
 import { deleteUPPhoto } from '@/api/project/unitproject/unitproject/upphoto'
@@ -692,16 +693,58 @@ export default {
     },
     // 查看图片
     handlePhotoView(userValue) {
-      console.log(userValue)
+      this.fileDetails = []
       this.photoViewVisible = true
-      this.fileDetails = userValue.file_details
+      const data = {
+        id: userValue.id
+      }
+      getFileDetailsUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.fileDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-    // 查看图片
+    // 查看日志
     logView(userValue) {
+      this.logDetails = []
       this.logViewVisible = true
-      this.logDetails = userValue.log_details
+      const data = {
+        id: userValue.id
+      }
+      getLogUnitProject(data).then(
+        res => {
+          this.$notify({
+            title: '查询成功',
+            type: 'success',
+            duration: 1000
+          })
+          this.logDetails = res.data
+        }).catch(
+        (error) => {
+          console.log('1')
+          this.$notify({
+            title: '查询错误',
+            message: error.data,
+            type: 'error',
+            duration: 0
+          })
+        }
+      )
     },
-
     // 导入
     importExcel() {
       const h = this.$createElement
@@ -806,17 +849,17 @@ export default {
               res => {
                 res.data = res.data.map(item => {
                   return {
-                    整机版本名: item.name.name,
-                    整机版本编码: item.name.code,
+                    整机版本名: item.name,
+                    整机版本编码: item.code,
                     类型: item.category.name,
-                    是否定名: item.name.is_named,
-                    国别: item.name.nationality,
-                    系列排序: item.name.serial_number,
-                    整机排序: item.name.unit_number,
+                    是否定名: item.units_version.is_named,
+                    国别: item.units_version.nationality,
+                    系列排序: item.units_version.serial_number,
+                    整机排序: item.units_version.unit_number,
                     级别: item.level.name,
                     备注: item.memo,
-                    创建时间: item.create_time,
-                    更新时间: item.update_time,
+                    创建时间: item.created_time,
+                    更新时间: item.updated_time,
                     创建者: item.creator
                   }
                 })

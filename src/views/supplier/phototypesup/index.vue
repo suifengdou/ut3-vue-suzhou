@@ -1,5 +1,5 @@
 <template>
-  <div class="handboardsupplier-container">
+  <div class="phototypesupplier-container">
     <div class="tableTitle">
       <el-row :gutter="20">
         <el-col :span="5" class="titleBar">
@@ -391,11 +391,11 @@
 </template>
 
 <script>
-import { getHandboardSupplierList, createHandboardSupplier, updateHandboardSupplier } from '@/api/supplier/handboardsup'
+import { getPhototypeSupplier, createPhototypeSupplier, updatePhototypeSupplier } from '@/api/supplier/phototype'
 import { getCompanyList } from '@/api/base/company'
 import moment from 'moment'
 export default {
-  name: 'handboardsupplier-container',
+  name: 'phototypesupplier-container',
   data() {
     return {
       DataList: [],
@@ -459,7 +459,7 @@ export default {
           this.params.create_time_before = moment.parseZone(this.params.create_time[1]).local().format('YYYY-MM-DD HH:MM:SS')
         }
       }
-      getHandboardSupplierList(this.params).then(
+      getPhototypeSupplier(this.params).then(
         res => {
           this.DataList = res.data.results
           this.totalNum = res.data.count
@@ -489,7 +489,7 @@ export default {
     // 提交添加
     handleSubmitAdd() {
       console.log(this.formAdd)
-      createHandboardSupplier(this.formAdd).then(
+      createPhototypeSupplier(this.formAdd).then(
         () => {
           this.fetchData()
           this.handleCancelAdd()
@@ -534,7 +534,7 @@ export default {
         }
         const { id, ...data } = this.formEdit
         console.log(data)
-        updateHandboardSupplier(id, data).then(
+        updatePhototypeSupplier(id, data).then(
           () => {
             this.dialogVisibleEdit = false
             this.fetchData()
